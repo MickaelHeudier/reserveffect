@@ -873,3 +873,72 @@ make_anova_barplot_coral_mpa <- function(df, species, coral_attrib){
 
 
 }
+
+
+
+#' Make two-way non parametric test (scheirerRayHare test) for density per mpa status and coral habitat and barplot of the result
+#'
+#' @param df
+#' @param species
+#' @param coral_attrib
+#'
+#' @return
+#' @export
+#'
+
+make_twoway_test_barplot_coral_mpa <- function(df, species, coral_attrib){
+
+  df %>%
+    dplyr::mutate(density = get(paste0("density_", species))) %>%
+    dplyr::mutate(coral_hab = get(paste(coral_attrib))) -> df
+
+  # remove cells corresponding to habitats that do not have both occurrences of mpa_status following
+  # table(df$mpa_status, df$coral_hab)
+  # channel, deep lagoon, main land, pass reef flat, pass
+  df %>%
+    dplyr::filter(!coral_hab %in% c("channel", "deep lagoon", "main land", "pass reef flat", "pass")) ->  df
+
+  # https://rcompanion.org/handbook/F_14.html
+  # The Scheirer Ray Hare test is a nonparametric test used for a two-way factorial experiment.
+
+  res = rcompanion::scheirerRayHare(density ~ mpa_status + coral_hab, data = df)
+
+  print(res)
+
+  # make dataframe for plotting
+  new = data.frame(var = c("mpa", "coral", "mpa * coral"),
+                   effect =  res$H[1:3],
+                   pval = res$p.value[1:3])
+
+  #add significance symbol
+  new$signif = ifelse(new$pval < 0.05, "*", "ns")
+
+  #max effect for plotting
+  maxeffect = max(new$effect)
+
+  #significance vector for plotting
+  signif = new$signif
+
+  #defined positions for correct order of bars
+  positions <- c("mpa", "coral", "mpa * coral")
+
+
+  # plot
+  p = ggplot2::ggplot(new, ggplot2::aes(x = var , y = effect)) +
+    ggplot2::geom_col() +
+    ggplot2::ylab("effect") +
+    ggplot2::xlab("") +
+    ggplot2::annotate("text", x = 1, y = maxeffect + 0.2, label = signif[1], size = 6) +
+    ggplot2::annotate("text", x = 2, y = maxeffect + 0.2, label = signif[2], size = 6) +
+    ggplot2::annotate("text", x = 3, y = maxeffect + 0.2, label = signif[3], size = 6) +
+    ggplot2::labs(title=paste("2-way test for", species)) +
+    ggplot2::scale_x_discrete(limits = positions) +
+    ggplot2::theme(axis.text = ggplot2::element_text(size=14),
+                   axis.title = ggplot2::element_text(size=14,face="bold"),
+                   plot.title = ggplot2::element_text(hjust = 0.5))+
+    ggplot2::theme_bw()
+
+  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/twoway_test_barplot_coral_", coral_attrib, "_mpa_", species, ".png")), p, width = 7, height = 5)
+
+}
+

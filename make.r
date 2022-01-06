@@ -7,12 +7,13 @@ devtools::load_all()
 
 #Define study area coordnates
 #small region
-lat1_sm =  -21.51 ; lat2_sm = -21.66
-lon1_sm = 165.21 ; lon2_sm = 165.45
+lat1_sm =  -21.52 ; lat2_sm = -21.65
+lon1_sm = 165.195 ; lon2_sm = 165.458
+# lat1_sm =  -21.51 ; lat2_sm = -21.66
+# lon1_sm = 165.21 ; lon2_sm = 165.45
 #big region
 lat1_bg =  -21.2 ; lat2_bg = -22
 lon1_bg = 164.6 ; lon2_bg = 166
-
 
 ######################################## CALCULATE FLIGHT PARAMETERS ########################################
 
@@ -70,15 +71,14 @@ telemetry_obs_poe %>%
 ######################################## READ CORAL DATA ########################################
 
 # read coral geomorpology polygons
+#adapt news polygons
 coral_poly = reserveffect::read_coralnc()
 
 # make study area raster (resolution 0.001 degrees)
 rast_sm = reserveffect::make_area_raster(lat1_sm, lon1_sm, lat2_sm, lon2_sm, 0.0025)
-rast_bg = reserveffect::make_area_raster(lat1_bg, lon1_bg, lat2_bg, lon2_bg, 0.01)
 
 # make coral cover raster
 coral_cover_sm = reserveffect::make_coral_cover_raster(coral_poly, rast_sm)
-coral_cover_bg = reserveffect::make_coral_cover_raster(coral_poly, rast_bg)
 
 
 ######################################## READ MPA DATA ########################################
@@ -94,20 +94,15 @@ mpa_poe = reserveffect::extract_mpa_poe(mpa)
 ######################################## READ TRANSECT DATA ########################################
 
 points1 = reserveffect::read_transects_points("megafauna1_points_latlon")
-points2 = reserveffect::read_transects_points("megafauna2_points_latlon")
-points3 = reserveffect::read_transects_points("megafauna3_points_latlon")
 
 library(sp)
 lines1 = reserveffect::make_transect_lines(points1, "1")
-lines2 = reserveffect::make_transect_lines(points2, "2")
-lines3 = reserveffect::make_transect_lines(points3, "3")
 #lapply does not work in function *****RUN OUTSIDE FUNCTION
 
-lines = reserveffect::merge_transect_lines(lines1, lines2, lines3)
+####### OSM maps
+maplatlon_sm = reserveffect::osm_map(lat1_sm, lon1_sm, lat2_sm, lon2_sm) #bing (satellite view)
 
 #map transects
-reserveffect::map_transects(maplatlon_bg, lines, "big")
-reserveffect::map_transects(maplatlon_sm, lines1, "small")
 #with scalebar and mpa
 reserveffect::map_transects_scalebar_mpa(maplatlon_sm, lines1, mpa_poe, "small", lat1_sm, lon1_sm, lat2_sm, lon2_sm,
                                          dist = 2, offset_lon = 0.07, offset_lat = 0.01)
@@ -115,92 +110,80 @@ reserveffect::map_transects_scalebar_mpa(maplatlon_sm, lines1, mpa_poe, "small",
 
 ############################################ MAKE BASIC MAPS #############################################################
 
-
-####### OSM maps
-maplatlon_sm = reserveffect::osm_map(lat1_sm, lon1_sm, lat2_sm, lon2_sm) #bing (satellite view)
-maplatlon_bg = reserveffect::osm_map(lat1_bg, lon1_bg, lat2_bg, lon2_bg) #bing (satellite view)
-#maplatlon_sm_terrain = reserveffect::osm_map2(lat1_sm, lon1_sm, lat2_sm, lon2_sm) #stamer-terrain
-
 ###### Map coral polygons
 reserveffect::map_coral_poly(maplatlon_sm, coral_poly, "l1_attrib", "small")
 reserveffect::map_coral_poly(maplatlon_sm, coral_poly, "l2_attrib", "small")
 reserveffect::map_coral_poly(maplatlon_sm, coral_poly, "l3_attrib", "small")
 reserveffect::map_coral_poly(maplatlon_sm, coral_poly, "l4_attrib", "small")
-reserveffect::map_coral_poly(maplatlon_bg, coral_poly, "l3_attrib", "big")
-reserveffect::map_coral_poly(maplatlon_bg, coral_poly, "l4_attrib", "big")
 
 ###### Map coral cover
 reserveffect::map_coral_cover(maplatlon_sm, coral_cover_sm, "small")
-reserveffect::map_coral_cover(maplatlon_bg, coral_cover_bg, "big")
 
 ##### Map MPAs
 reserveffect::map_mpa(maplatlon_sm, mpa, "small")
-reserveffect::map_mpa(maplatlon_bg, mpa,  "big")
 
 ##### Map MPA POE
 reserveffect::map_mpa_poe(maplatlon_sm, mpa_poe, "small")
 
-####### Empty map big
-reserveffect::empty_map_big(maplatlon_bg, lat1_bg, lon1_bg, lat2_bg, lon2_bg)
 
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~ all data ~~~~~~~~~~~~~~~~~~~~~~~~
-
-###### telemetry only
-reserveffect::map_telemetry(maplatlon_sm, telemetry, "small")
-reserveffect::map_telemetry(maplatlon_bg, telemetry, "big")
-
-###### telemetry with one color per date
-reserveffect::map_telemetry_date(maplatlon_sm, telemetry, "small")
-reserveffect::map_telemetry_date(maplatlon_bg, telemetry, "big")
-
-###### telemetry with separate map per date
-reserveffect::map_telemetry_date_separate(maplatlon_sm, telemetry, "small")
-reserveffect::map_telemetry_date_separate(maplatlon_bg, telemetry, "big")
-
-####### telemetry with all species
-reserveffect::map_all_species_telemetry(maplatlon_sm, telemetry, telemetry_obs, "small")
-reserveffect::map_all_species_telemetry(maplatlon_bg, telemetry, telemetry_obs, "big")
-
-####### telemetry with individual species
-reserveffect::map_indiv_species_telemetry(maplatlon_sm, telemetry, telemetry_obs, "small")
-reserveffect::map_indiv_species_telemetry(maplatlon_bg, telemetry, telemetry_obs, "big")
-
-####### telemetry with individual species with separate map per species
-#reserveffect::map_indiv_species_telemetry_separate(maplatlon_sm, telemetry, telemetry_obs, "small")
-reserveffect::map_indiv_species_telemetry_separate(maplatlon_bg, telemetry, telemetry_obs, "big")
-
-###### telemetry and transects lines
-reserveffect::map_telemetry_transects(maplatlon_sm, telemetry, lines, "small")
-reserveffect::map_telemetry_transects(maplatlon_bg, telemetry, lines, "big")
+# # ~~~~~~~~~~~~~~~~~~~~~~~~ all data ~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# ###### telemetry only
+# reserveffect::map_telemetry(maplatlon_sm, telemetry, "small")
+# reserveffect::map_telemetry(maplatlon_bg, telemetry, "big")
+#
+# ###### telemetry with one color per date
+# reserveffect::map_telemetry_date(maplatlon_sm, telemetry, "small")
+# reserveffect::map_telemetry_date(maplatlon_bg, telemetry, "big")
+#
+# ###### telemetry with separate map per date
+# reserveffect::map_telemetry_date_separate(maplatlon_sm, telemetry, "small")
+# reserveffect::map_telemetry_date_separate(maplatlon_bg, telemetry, "big")
+#
+# ####### telemetry with all species
+# reserveffect::map_all_species_telemetry(maplatlon_sm, telemetry, telemetry_obs, "small")
+# reserveffect::map_all_species_telemetry(maplatlon_bg, telemetry, telemetry_obs, "big")
+#
+# ####### telemetry with individual species
+# reserveffect::map_indiv_species_telemetry(maplatlon_sm, telemetry, telemetry_obs, "small")
+# reserveffect::map_indiv_species_telemetry(maplatlon_bg, telemetry, telemetry_obs, "big")
+#
+# ####### telemetry with individual species with separate map per species
+# #reserveffect::map_indiv_species_telemetry_separate(maplatlon_sm, telemetry, telemetry_obs, "small")
+# reserveffect::map_indiv_species_telemetry_separate(maplatlon_bg, telemetry, telemetry_obs, "big")
+#
+# ###### telemetry and transects lines
+# reserveffect::map_telemetry_transects(maplatlon_sm, telemetry, lines, "small")
+# reserveffect::map_telemetry_transects(maplatlon_bg, telemetry, lines, "big")
 
 
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~ only poe data ~~~~~~~~~~~~~~~~~~~~~~~~
-
-###### telemetry only
-reserveffect::map_telemetry(maplatlon_sm, telemetry_poe, "small", TRUE)
-
-###### telemetry with one color per date
-reserveffect::map_telemetry_date(maplatlon_sm, telemetry_poe, "small", TRUE)
-
-###### telemetry with separate map per date
-reserveffect::map_telemetry_date_separate(maplatlon_sm, telemetry_poe, "small", TRUE)
-
-###### telemetry with separate map per video id
-reserveffect::map_telemetry_video_id_separate(maplatlon_sm, telemetry_poe, "small", TRUE)
-
-####### telemetry with all species
-reserveffect::map_all_species_telemetry(maplatlon_sm, telemetry_poe, telemetry_obs_poe, "small", TRUE)
-
-####### telemetry with individual species
-reserveffect::map_indiv_species_telemetry(maplatlon_sm, telemetry_poe, telemetry_obs_poe, "small", TRUE)
-
-####### telemetry with individual species with separate map per species
-reserveffect::map_indiv_species_telemetry_separate(maplatlon_sm, telemetry_poe, telemetry_obs_poe, "small", TRUE)
-
-###### telemetry and transects lines
-reserveffect::map_telemetry_transects(maplatlon_sm, telemetry_poe, lines, "small", TRUE)
+# # ~~~~~~~~~~~~~~~~~~~~~~~~ only poe data ~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# ###### telemetry only
+# reserveffect::map_telemetry(maplatlon_sm, telemetry_poe, "small", TRUE)
+#
+# ###### telemetry with one color per date
+# reserveffect::map_telemetry_date(maplatlon_sm, telemetry_poe, "small", TRUE)
+#
+# ###### telemetry with separate map per date
+# reserveffect::map_telemetry_date_separate(maplatlon_sm, telemetry_poe, "small", TRUE)
+#
+# ###### telemetry with separate map per video id
+# reserveffect::map_telemetry_video_id_separate(maplatlon_sm, telemetry_poe, "small", TRUE)
+#
+# ####### telemetry with all species
+# reserveffect::map_all_species_telemetry(maplatlon_sm, telemetry_poe, telemetry_obs_poe, "small", TRUE)
+#
+# ####### telemetry with individual species
+# reserveffect::map_indiv_species_telemetry(maplatlon_sm, telemetry_poe, telemetry_obs_poe, "small", TRUE)
+#
+# ####### telemetry with individual species with separate map per species
+# reserveffect::map_indiv_species_telemetry_separate(maplatlon_sm, telemetry_poe, telemetry_obs_poe, "small", TRUE)
+#
+# ###### telemetry and transects lines
+# reserveffect::map_telemetry_transects(maplatlon_sm, telemetry_poe, lines, "small", TRUE)
 
 
 ###################################### SELECT ON EFFORT TELEMETRY FOR POE #####################################
@@ -252,11 +235,6 @@ reserveffect::map_telemetry_date_separate_poe_on(maplatlon_sm, telemetry_poe_on)
 ###### telemetry with separate map per video id Poe on effort
 reserveffect::map_telemetry_video_id_separate_poe_on(maplatlon_sm, telemetry_poe_on)
 
-###### telemetry with separate map per video id with species observation Poe on effort
-#to check turtle hotspot
-#reserveffect::map_telemetry_video_id_obs_separate_poe_on(maplatlon_sm, telemetry_poe_on, telemetry_obs_poe_on, "Turtle")
-
-
 
 ############################################ MAKE DENSITY MAPS ON REGULAR GRID POE ON EFFORT #############################################################
 
@@ -303,10 +281,6 @@ reserveffect::map_tracklen_per_grid_per_date_poe(maplatlon_sm_proj, grid_tracks_
 #Map length of tracks per grid cell (all dates)
 reserveffect::map_tracklen_per_grid_poe(maplatlon_sm_proj, grid_tracks_per_date)
 
-#Make dataframe length of tracks per grid cell per date
-#df_tracks = reserveffect::make_df_tracklen_per_grid_per_date_poe(grid_tracks_per_date)
-
-
 
 ### Observations
 
@@ -318,11 +292,8 @@ grid_obs_per_date = reserveffect::count_obs_per_grid_per_date(grid_sm, telemetry
 #Map number of species observations per grid cell per date
 reserveffect::map_obs_per_grid_per_date_species_poe(maplatlon_sm_proj, grid_obs_per_date, "Turtle")
 reserveffect::map_obs_per_grid_per_date_species_poe(maplatlon_sm_proj, grid_obs_per_date, "Dugong_certain")
-reserveffect::map_obs_per_grid_per_date_species_poe(maplatlon_sm_proj, grid_obs_per_date, "Dugong_probable")
 reserveffect::map_obs_per_grid_per_date_species_poe(maplatlon_sm_proj, grid_obs_per_date, "Round_ray")
 reserveffect::map_obs_per_grid_per_date_species_poe(maplatlon_sm_proj, grid_obs_per_date, "Eagle_ray")
-reserveffect::map_obs_per_grid_per_date_species_poe(maplatlon_sm_proj, grid_obs_per_date, "Manta_ray")
-reserveffect::map_obs_per_grid_per_date_species_poe(maplatlon_sm_proj, grid_obs_per_date, "Dolphin")
 reserveffect::map_obs_per_grid_per_date_species_poe(maplatlon_sm_proj, grid_obs_per_date, "Shark")
 
 #Map number of species observations per grid cell (all dates)
@@ -492,6 +463,14 @@ make_anova_barplot_coral_mpa(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
 make_anova_barplot_coral_mpa(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib") # violation of normality
 
 
+# Make two-way non parametric test (scheirerRayHare test) for density per mpa status and coral habitat and barplot of the result
+# https://rcompanion.org/handbook/F_14.html
+
+make_twoway_test_barplot_coral_mpa(df_all_species_coral_mpa, "Shark", "l4_attrib")
+make_twoway_test_barplot_coral_mpa(df_all_species_coral_mpa, "Turtle", "l4_attrib")
+make_twoway_test_barplot_coral_mpa(df_all_species_coral_mpa, "Dugong_certain", "l4_attrib")
+make_twoway_test_barplot_coral_mpa(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
+make_twoway_test_barplot_coral_mpa(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib")
 
 
 ##*** test other effects (month? confinement? tide?) on desnities
