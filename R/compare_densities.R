@@ -711,7 +711,7 @@ compare_densities_between_combined_habitats_mpa_status <- function(df, species, 
 #' @param df
 #' @param species
 
-boxplot_density_mpa <- function(df, species){
+boxplot_density_mpa <- function(df, species, img){
 
   df %>%
     dplyr::mutate(density = get(paste0("density_", species))) %>%
@@ -720,6 +720,9 @@ boxplot_density_mpa <- function(df, species){
 
   p = ggpubr::ggboxplot(df_no0, x = "mpa_status", y = paste0("density_", species))
   p = ggpubr::ggpar(p, rotate = TRUE)
+
+  #add megafauna image
+  patchwork::inset_element(p = img, left = 0.5, bottom = 0.55, right = 1, top = 1)
 
   ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/boxplot_density_mpa_", species, ".png")), p, width = 7, height = 5)
 

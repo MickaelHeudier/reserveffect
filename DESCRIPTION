@@ -38,4 +38,8 @@ Imports:
     ggpubr,
     gridExtra,
     car,
-    ggsignif
+    ggsignif,
+    rcompanion,
+    png,
+    grid,
+    patchwork

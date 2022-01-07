@@ -42,6 +42,10 @@ usethis::use_package("ggpubr")
 usethis::use_package("car")
 usethis::use_package("ggsignif")
 usethis::use_package("rcompanion")
+usethis::use_package("png")
+usethis::use_package("grid")
+
+
 
 #utiliser les pipes dans les fonctions
 #usethis::use_pipe() #does not work

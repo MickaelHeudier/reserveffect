@@ -762,3 +762,20 @@ select_telemetry_in_buffer <- function(telem_sp, buf){
   return(telem_effort)
 
 }
+
+
+#' Read megafauna image in png format
+#'
+#' @param species
+#'
+#' @return
+#' @export
+#'
+
+read_megafauna_image <- function(species){
+
+  img = png::readPNG(paste0(here::here("data/images"),"/", species, ".png"))
+
+  return(img)
+
+}
