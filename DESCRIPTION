@@ -42,4 +42,6 @@ Imports:
     rcompanion,
     png,
     grid,
-    patchwork
+    patchwork,
+    vegan,
+    cowplot

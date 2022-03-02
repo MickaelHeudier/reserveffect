@@ -44,8 +44,8 @@ usethis::use_package("ggsignif")
 usethis::use_package("rcompanion")
 usethis::use_package("png")
 usethis::use_package("grid")
-
-
+usethis::use_package("vegan")
+usethis::use_package("cowplot")
 
 #utiliser les pipes dans les fonctions
 #usethis::use_pipe() #does not work
@@ -66,3 +66,6 @@ file.create("make.R")
 #command to stage files for git commit
 git add -A
 ls -al ~/.ssh
+
+#uncommit
+git reset --soft HEAD~1

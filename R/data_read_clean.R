@@ -586,6 +586,60 @@ read_coralnc <- function(){
 }
 
 
+#' Read and convert New Caledonia Allen coral shapefile benthic
+#'
+#' @param lon1
+#' @param lon2
+#' @param lat2
+#' @param lat1
+#'
+#' @return
+#' @export
+#'
+
+read_crop_and_convert_allen_coralnc_benthic <- function(lon1, lon2, lat2, lat1){
+
+  # read shapefile
+  data_allen = sf::st_read(dsn = "data/allen/benthic_sm.gpkg", stringsAsFactors = FALSE)
+
+  #crop
+  data_allen_crop = sf::st_crop(data_allen, xmin = lon1, ymin = lat2, xmax = lon2, ymax = lat1)
+
+  #convert sf to spatialPolygonsDataFrame
+  sf_allen_coral_poly = sf:::as_Spatial(data_allen_crop)
+
+  return(sf_allen_coral_poly)
+
+}
+
+
+#' Read and convert New Caledonia Allen coral shapefile geomorphic
+#'
+#' @param lon1
+#' @param lon2
+#' @param lat2
+#' @param lat1
+#'
+#' @return
+#' @export
+#'
+
+read_crop_and_convert_allen_coralnc_geomorphic <- function(lon1, lon2, lat2, lat1){
+
+  # read shapefile
+  data_allen = sf::st_read(dsn = "data/allen/geomorphic.gpkg", stringsAsFactors = FALSE)
+
+  #crop
+  data_allen_crop = sf::st_crop(data_allen, xmin = lon1, ymin = lat2, xmax = lon2, ymax = lat1)
+
+  #convert sf to spatialPolygonsDataFrame
+  sf_allen_coral_poly = sf:::as_Spatial(data_allen_crop)
+
+  return(sf_allen_coral_poly)
+
+}
+
+
 #' Make coral cover raster
 #'
 #' @param cor

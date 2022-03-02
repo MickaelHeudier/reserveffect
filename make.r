@@ -81,12 +81,17 @@ img_Eagle_ray = reserveffect::read_megafauna_image("Eagle_ray")
 #adapt news polygons
 coral_poly = reserveffect::read_coralnc()
 
+#read Allen coral geomorpology polygons benthic
+allen_coral_poly = reserveffect::read_crop_and_convert_allen_coralnc_benthic(lon1_sm, lon2_sm, lat2_sm, lat1_sm)
+
+#read Allen coral geomorpology polygons geomorphic
+allen_coral_poly_geomorphic = reserveffect::read_crop_and_convert_allen_coralnc_geomorphic(lon1_sm, lon2_sm, lat2_sm, lat1_sm)
+
 # make study area raster (resolution 0.001 degrees)
 rast_sm = reserveffect::make_area_raster(lat1_sm, lon1_sm, lat2_sm, lon2_sm, 0.0025)
 
 # make coral cover raster
 coral_cover_sm = reserveffect::make_coral_cover_raster(coral_poly, rast_sm)
-
 
 ######################################## READ MPA DATA ########################################
 
@@ -126,6 +131,18 @@ reserveffect::map_coral_poly(maplatlon_sm, coral_poly, "l2_attrib", "small")
 reserveffect::map_coral_poly(maplatlon_sm, coral_poly, "l3_attrib", "small")
 reserveffect::map_coral_poly(maplatlon_sm, coral_poly, "l4_attrib", "small")
 
+###### Map Allen coral polygons benthic
+reserveffect::map_allen_coral_poly(maplatlon_sm, allen_coral_poly, "small", lon1_sm, lon2_sm, lat1_sm, lat2_sm, dist = 2, offset_lon = 0.07, offset_lat = 0.01)
+
+###### Map Allen coral polygons geomorphic
+reserveffect::map_allen_coral_poly_geomorphic(maplatlon_sm, allen_coral_poly_geomorphic, "small", lon1_sm, lon2_sm, lat1_sm, lat2_sm, dist = 2, offset_lon = 0.07, offset_lat = 0.01)
+
+###### Map Allen coral polygons benthic with satellite view
+reserveffect::map_allen_coral_poly_satellite(maplatlon_sm, mpa_poe, allen_coral_poly, "small", lon1_sm, lon2_sm, lat1_sm, lat2_sm, dist = 2, offset_lon = 0.07, offset_lat = 0.01)
+
+###### Map Allen coral polygons geomorphic with satellite view
+reserveffect::map_allen_coral_poly_geomorphic_satellite(maplatlon_sm, allen_coral_poly_geomorphic, "small", lon1_sm, lon2_sm, lat1_sm, lat2_sm, dist = 2, offset_lon = 0.07, offset_lat = 0.01)
+
 ###### Map coral cover
 reserveffect::map_coral_cover(maplatlon_sm, coral_cover_sm, "small")
 
@@ -134,66 +151,6 @@ reserveffect::map_mpa(maplatlon_sm, mpa, "small")
 
 ##### Map MPA POE
 reserveffect::map_mpa_poe(maplatlon_sm, mpa_poe, "small")
-
-
-
-# # ~~~~~~~~~~~~~~~~~~~~~~~~ all data ~~~~~~~~~~~~~~~~~~~~~~~~
-#
-# ###### telemetry only
-# reserveffect::map_telemetry(maplatlon_sm, telemetry, "small")
-# reserveffect::map_telemetry(maplatlon_bg, telemetry, "big")
-#
-# ###### telemetry with one color per date
-# reserveffect::map_telemetry_date(maplatlon_sm, telemetry, "small")
-# reserveffect::map_telemetry_date(maplatlon_bg, telemetry, "big")
-#
-# ###### telemetry with separate map per date
-# reserveffect::map_telemetry_date_separate(maplatlon_sm, telemetry, "small")
-# reserveffect::map_telemetry_date_separate(maplatlon_bg, telemetry, "big")
-#
-# ####### telemetry with all species
-# reserveffect::map_all_species_telemetry(maplatlon_sm, telemetry, telemetry_obs, "small")
-# reserveffect::map_all_species_telemetry(maplatlon_bg, telemetry, telemetry_obs, "big")
-#
-# ####### telemetry with individual species
-# reserveffect::map_indiv_species_telemetry(maplatlon_sm, telemetry, telemetry_obs, "small")
-# reserveffect::map_indiv_species_telemetry(maplatlon_bg, telemetry, telemetry_obs, "big")
-#
-# ####### telemetry with individual species with separate map per species
-# #reserveffect::map_indiv_species_telemetry_separate(maplatlon_sm, telemetry, telemetry_obs, "small")
-# reserveffect::map_indiv_species_telemetry_separate(maplatlon_bg, telemetry, telemetry_obs, "big")
-#
-# ###### telemetry and transects lines
-# reserveffect::map_telemetry_transects(maplatlon_sm, telemetry, lines, "small")
-# reserveffect::map_telemetry_transects(maplatlon_bg, telemetry, lines, "big")
-
-
-
-# # ~~~~~~~~~~~~~~~~~~~~~~~~ only poe data ~~~~~~~~~~~~~~~~~~~~~~~~
-#
-# ###### telemetry only
-# reserveffect::map_telemetry(maplatlon_sm, telemetry_poe, "small", TRUE)
-#
-# ###### telemetry with one color per date
-# reserveffect::map_telemetry_date(maplatlon_sm, telemetry_poe, "small", TRUE)
-#
-# ###### telemetry with separate map per date
-# reserveffect::map_telemetry_date_separate(maplatlon_sm, telemetry_poe, "small", TRUE)
-#
-# ###### telemetry with separate map per video id
-# reserveffect::map_telemetry_video_id_separate(maplatlon_sm, telemetry_poe, "small", TRUE)
-#
-# ####### telemetry with all species
-# reserveffect::map_all_species_telemetry(maplatlon_sm, telemetry_poe, telemetry_obs_poe, "small", TRUE)
-#
-# ####### telemetry with individual species
-# reserveffect::map_indiv_species_telemetry(maplatlon_sm, telemetry_poe, telemetry_obs_poe, "small", TRUE)
-#
-# ####### telemetry with individual species with separate map per species
-# reserveffect::map_indiv_species_telemetry_separate(maplatlon_sm, telemetry_poe, telemetry_obs_poe, "small", TRUE)
-#
-# ###### telemetry and transects lines
-# reserveffect::map_telemetry_transects(maplatlon_sm, telemetry_poe, lines, "small", TRUE)
 
 
 ###################################### SELECT ON EFFORT TELEMETRY FOR POE #####################################
@@ -216,10 +173,6 @@ telemetry_poe_sp = reserveffect::convert_telemetry_spatial(telemetry_poe)
 
 #Convert telemetry (on effort) to spatialpoints dataframe
 telemetry_poe_on_sp = reserveffect::convert_telemetry_spatial(telemetry_poe_on)
-
-#quick plot
-sp::plot(telemetry_poe_sp, cex = 0.3, col = 2)
-sp::plot(telemetry_poe_on_sp, cex = 0.3, add = TRUE)
 
 #map telemetry with separate map per date
 map_telemetry_date_separate_on_off(maplatlon_sm, telemetry_poe, telemetry_poe_on, "small", just_poe = TRUE)
@@ -336,6 +289,20 @@ reserveffect::map_dens_per_grid_species_poe_with_megafauna_image(maplatlon_sm_pr
 reserveffect::map_dens_per_grid_species_poe_with_megafauna_image(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Round_ray", mpa_poe, img_Round_ray)
 reserveffect::map_dens_per_grid_species_poe_with_megafauna_image(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Eagle_ray", mpa_poe, img_Eagle_ray)
 
+#Map species densities per grid cell (all dates) with mpa overlaid and with megafauna image  LOG with zero
+reserveffect::map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Dugong_certain", mpa_poe, img_Dugong_certain)
+reserveffect::map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Turtle", mpa_poe, img_Turtle)
+reserveffect::map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Shark", mpa_poe, img_Shark)
+reserveffect::map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Round_ray", mpa_poe, img_Round_ray)
+reserveffect::map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Eagle_ray", mpa_poe, img_Eagle_ray)
+
+#Map species densities per grid cell (all dates) with mpa overlaid and with megafauna image LOG
+reserveffect::map_dens_per_grid_species_poe_with_megafauna_image_log(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Dugong_certain", mpa_poe, img_Dugong_certain)
+reserveffect::map_dens_per_grid_species_poe_with_megafauna_image_log(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Turtle", mpa_poe, img_Turtle)
+reserveffect::map_dens_per_grid_species_poe_with_megafauna_image_log(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Shark", mpa_poe, img_Shark)
+reserveffect::map_dens_per_grid_species_poe_with_megafauna_image_log(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Round_ray", mpa_poe, img_Round_ray)
+reserveffect::map_dens_per_grid_species_poe_with_megafauna_image_log(maplatlon_sm_proj, grid_obs_per_date, grid_tracks_per_date, footprint_width, "Eagle_ray", mpa_poe, img_Eagle_ray)
+
 
 ############################################ MAKE DENSITY MAPS ON CORAL GRID POE ON EFFORT #############################################################
 
@@ -368,8 +335,9 @@ df_all_species = reserveffect::make_df_all_species_poe(grid_obs_per_date, grid_t
 # NB dataframe points are intersected with polygons
 
 df_all_species_coral = reserveffect::intersect_df_coral_poly(df_all_species, coral_poly)
+df_all_species_allen_coral = reserveffect::intersect_df_allen_coral_poly(df_all_species_coral, allen_coral_poly)
 df_all_species_coral_mpa = reserveffect::intersect_df_mpa_poly(df_all_species_coral, mpa_poe)
-
+df_all_species_allen_coral_mpa = reserveffect::intersect_df_mpa_allen_poly(df_all_species_allen_coral, mpa_poe)
 
 ###barplots
 
@@ -379,6 +347,13 @@ reserveffect::barplot_density_coral(df_all_species_coral, "l4_attrib", "Turtle")
 reserveffect::barplot_density_coral(df_all_species_coral, "l4_attrib", "Shark")
 reserveffect::barplot_density_coral(df_all_species_coral, "l4_attrib", "Round_ray")
 reserveffect::barplot_density_coral(df_all_species_coral, "l4_attrib", "Eagle_ray")
+
+#habitat with data Allen
+reserveffect::barplot_density_allen_coral(df_all_species_allen_coral, "Dugong_certain")
+reserveffect::barplot_density_allen_coral(df_all_species_allen_coral, "Turtle")
+reserveffect::barplot_density_allen_coral(df_all_species_allen_coral, "Shark")
+reserveffect::barplot_density_allen_coral(df_all_species_allen_coral, "Round_ray")
+reserveffect::barplot_density_allen_coral(df_all_species_allen_coral, "Eagle_ray")
 
 #mpa
 reserveffect::barplot_density_mpa(df_all_species_coral_mpa, "Dugong_certain")
@@ -396,6 +371,13 @@ reserveffect::barplot_density_coral_per_date(df_all_species_coral, "l4_attrib", 
 reserveffect::barplot_density_coral_per_date(df_all_species_coral, "l4_attrib", "Shark")
 reserveffect::barplot_density_coral_per_date(df_all_species_coral, "l4_attrib", "Round_ray")
 reserveffect::barplot_density_coral_per_date(df_all_species_coral, "l4_attrib", "Eagle_ray")
+
+# #habitat with data Allen
+# reserveffect::barplot_density_allen_coral_per_date(df_all_species_allen_coral, "Dugong_certain")
+# reserveffect::barplot_density_allen_coral_per_date(df_all_species_allen_coral, "Turtle")
+# reserveffect::barplot_density_allen_coral_per_date(df_all_species_allen_coral, "Shark")
+# reserveffect::barplot_density_allen_coral_per_date(df_all_species_allen_coral, "Round_ray")
+# reserveffect::barplot_density_allen_coral_per_date(df_all_species_allen_coral, "Eagle_ray")
 
 #mpa
 reserveffect::barplot_density_mpa_per_date(df_all_species_coral_mpa, "Dugong_certain")
@@ -430,6 +412,13 @@ reserveffect::compare_densities_between_habitats(df_all_species_coral_mpa, "Shar
 reserveffect::compare_densities_between_habitats(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
 reserveffect::compare_densities_between_habitats(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib")
 
+#Test hyp that median densities between habitat types are different with data Allen
+reserveffect::compare_densities_between_allen_habitats(df_all_species_allen_coral_mpa, "Dugong_certain")
+reserveffect::compare_densities_between_allen_habitats(df_all_species_allen_coral_mpa, "Turtle")
+reserveffect::compare_densities_between_allen_habitats(df_all_species_allen_coral_mpa, "Shark")
+reserveffect::compare_densities_between_allen_habitats(df_all_species_allen_coral_mpa, "Round_ray")
+reserveffect::compare_densities_between_allen_habitats(df_all_species_allen_coral_mpa, "Eagle_ray")
+
 #Test hyp that median densities between habitat types are different pairwise
 reserveffect::compare_densities_between_habitats_pairwise(df_all_species_coral_mpa, "Dugong_certain", "l4_attrib")
 reserveffect::compare_densities_between_habitats_pairwise(df_all_species_coral_mpa, "Turtle", "l4_attrib")
@@ -437,14 +426,26 @@ reserveffect::compare_densities_between_habitats_pairwise(df_all_species_coral_m
 reserveffect::compare_densities_between_habitats_pairwise(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
 reserveffect::compare_densities_between_habitats_pairwise(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib")
 
+#Test hyp that median densities between habitat types are different pairwise with data Allen
+reserveffect::compare_densities_between_allen_habitats_pairwise(df_all_species_allen_coral_mpa, "Dugong_certain")
+reserveffect::compare_densities_between_allen_habitats_pairwise(df_all_species_allen_coral_mpa, "Turtle")
+reserveffect::compare_densities_between_allen_habitats_pairwise(df_all_species_allen_coral_mpa, "Shark")
+reserveffect::compare_densities_between_allen_habitats_pairwise(df_all_species_allen_coral_mpa, "Round_ray")
+reserveffect::compare_densities_between_allen_habitats_pairwise(df_all_species_allen_coral_mpa, "Eagle_ray")
 
 ###compare densities between habitat types and in/out mpa
-
 compare_densities_between_combined_habitats_mpa_status(df_all_species_coral_mpa, "Dugong_certain", "l4_attrib")
 compare_densities_between_combined_habitats_mpa_status(df_all_species_coral_mpa, "Turtle", "l4_attrib")
 compare_densities_between_combined_habitats_mpa_status(df_all_species_coral_mpa, "Shark", "l4_attrib")
 compare_densities_between_combined_habitats_mpa_status(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
 compare_densities_between_combined_habitats_mpa_status(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib")
+
+# ###compare densities between habitat types and in/out mpa with data Allen
+# compare_densities_between_combined_allen_habitats_mpa_status(df_all_species_coral_mpa, "Dugong_certain")
+# compare_densities_between_combined_allen_habitats_mpa_status(df_all_species_coral_mpa, "Turtle")
+# compare_densities_between_combined_allen_habitats_mpa_status(df_all_species_coral_mpa, "Shark")
+# compare_densities_between_combined_allen_habitats_mpa_status(df_all_species_coral_mpa, "Round_ray")
+# compare_densities_between_combined_allen_habitats_mpa_status(df_all_species_coral_mpa, "Eagle_ray")
 
 ###Boxplots (0s removed)
 
@@ -462,12 +463,54 @@ reserveffect::boxplot_density_coral(df_all_species_coral_mpa, "Shark", "l4_attri
 reserveffect::boxplot_density_coral(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
 reserveffect::boxplot_density_coral(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib")
 
+#habitat with data Allen
+reserveffect::boxplot_density_allen_coral(df_all_species_allen_coral_mpa, "Dugong_certain")
+reserveffect::boxplot_density_allen_coral(df_all_species_allen_coral_mpa, "Turtle")
+reserveffect::boxplot_density_allen_coral(df_all_species_allen_coral_mpa, "Shark")
+reserveffect::boxplot_density_allen_coral(df_all_species_allen_coral_mpa, "Round_ray")
+reserveffect::boxplot_density_allen_coral(df_all_species_allen_coral_mpa, "Eagle_ray")
+
 #habitat and mpa
 reserveffect::boxplot_density_coral_mpa(df_all_species_coral_mpa, "Dugong_certain", "l4_attrib")
 reserveffect::boxplot_density_coral_mpa(df_all_species_coral_mpa, "Turtle", "l4_attrib")
 reserveffect::boxplot_density_coral_mpa(df_all_species_coral_mpa, "Shark", "l4_attrib")
 reserveffect::boxplot_density_coral_mpa(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
 reserveffect::boxplot_density_coral_mpa(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib")
+
+#habitat and mpa with data Allen
+reserveffect::boxplot_density_allen_coral_mpa(df_all_species_allen_coral_mpa, "Dugong_certain")
+reserveffect::boxplot_density_allen_coral_mpa(df_all_species_allen_coral_mpa, "Turtle")
+reserveffect::boxplot_density_allen_coral_mpa(df_all_species_allen_coral_mpa, "Shark")
+reserveffect::boxplot_density_allen_coral_mpa(df_all_species_allen_coral_mpa, "Round_ray")
+reserveffect::boxplot_density_allen_coral_mpa(df_all_species_allen_coral_mpa, "Eagle_ray")
+
+#habitat and mpa with data Allen and megafauna image LOG
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_species_allen_coral_mpa, "Dugong_certain", img_Dugong_certain)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_species_allen_coral_mpa, "Turtle", img_Turtle)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_species_allen_coral_mpa, "Shark", img_Shark)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_species_allen_coral_mpa, "Round_ray", img_Round_ray)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_species_allen_coral_mpa, "Eagle_ray", img_Eagle_ray)
+
+#habitat and mpa with data Allen and megafauna image no LOG
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image(df_all_species_allen_coral_mpa, "Dugong_certain", img_Dugong_certain)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image(df_all_species_allen_coral_mpa, "Turtle", img_Turtle)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image(df_all_species_allen_coral_mpa, "Shark", img_Shark)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image(df_all_species_allen_coral_mpa, "Round_ray", img_Round_ray)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image(df_all_species_allen_coral_mpa, "Eagle_ray", img_Eagle_ray)
+
+#habitat and mpa with data Allen and megafauna image with zero + LOG
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero_log(df_all_species_allen_coral_mpa, "Dugong_certain", img_Dugong_certain)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero_log(df_all_species_allen_coral_mpa, "Turtle", img_Turtle)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero_log(df_all_species_allen_coral_mpa, "Shark", img_Shark)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero_log(df_all_species_allen_coral_mpa, "Round_ray", img_Round_ray)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero_log(df_all_species_allen_coral_mpa, "Eagle_ray", img_Eagle_ray)
+
+#habitat and mpa with data Allen and megafauna image with zero no LOG
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero(df_all_species_allen_coral_mpa, "Dugong_certain", img_Dugong_certain)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero(df_all_species_allen_coral_mpa, "Turtle", img_Turtle)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero(df_all_species_allen_coral_mpa, "Shark", img_Shark)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero(df_all_species_allen_coral_mpa, "Round_ray", img_Round_ray)
+reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero(df_all_species_allen_coral_mpa, "Eagle_ray", img_Eagle_ray)
 
 
 ### Make two-way anova for density per mpa status and coral habitat and barplot of the result
@@ -487,9 +530,30 @@ make_twoway_test_barplot_coral_mpa(df_all_species_coral_mpa, "Shark", "l4_attrib
 make_twoway_test_barplot_coral_mpa(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
 make_twoway_test_barplot_coral_mpa(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib")
 
+# Make two-way non parametric test (scheirerRayHare test) for density per mpa status and Allen coral habitat and barplot of the result
+# https://rcompanion.org/handbook/F_14.html
+make_twoway_test_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Dugong_certain")
+make_twoway_test_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Turtle")
+make_twoway_test_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Shark")
+make_twoway_test_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Round_ray")
+make_twoway_test_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Eagle_ray")
 
-##*** test other effects (month? confinement? tide?) on desnities
+# Barplot with all species : Make two-way non parametric test (scheirerRayHare test) for density per mpa status and Allen coral habitat and barplot of the result
+# https://rcompanion.org/handbook/F_14.html
+make_twoway_test_barplot_allen_coral_mpa_with_all_species(df_all_species_allen_coral_mpa, "Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
+
+
+# Make permanova for density per mpa status and coral habitat and barplot of the result with data Allen
+make_permanova_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Dugong_certain")
+make_permanova_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Turtle")
+make_permanova_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Shark")
+make_permanova_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Round_ray")
+make_permanova_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Eagle_ray")
+
+##*** test other effects (month? confinement? tide?) on densities
 ##*** account for differences in surface of polygons?
 
 ##*** need to correct densities
 ##*** how to deal with unregular survey frequency? (more frequent surveys in november)
+
+#Kruskal-Wallis
