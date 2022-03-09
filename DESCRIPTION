@@ -44,4 +44,5 @@ Imports:
     grid,
     patchwork,
     vegan,
-    cowplot
+    cowplot,
+    cartography

@@ -14,6 +14,9 @@ lon1_sm = 165.225 ; lon2_sm = 165.45
 #big region
 lat1_bg =  -21.2 ; lat2_bg = -22
 lon1_bg = 164.6 ; lon2_bg = 166
+#nc + australia
+lat1_nc = -30 ; lat2_nc = -10
+lon1_nc = 140 ; lon2_nc = 170
 
 ######################################## CALCULATE FLIGHT PARAMETERS ########################################
 
@@ -152,6 +155,17 @@ reserveffect::map_mpa(maplatlon_sm, mpa, "small")
 ##### Map MPA POE
 reserveffect::map_mpa_poe(maplatlon_sm, mpa_poe, "small")
 
+##### Map nc + australia satellite view
+reserveffect::map_nc(lat1_nc, lon1_nc, lat2_nc, lon2_nc)
+
+##### Map nc + australia + poe raster
+reserveffect::map_nc_australia_poe()
+
+##### Map nc + australia raster
+reserveffect::map_nc_australia()
+
+##### Map poe raster
+reserveffect::map_poe()
 
 ###################################### SELECT ON EFFORT TELEMETRY FOR POE #####################################
 

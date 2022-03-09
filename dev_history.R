@@ -46,6 +46,7 @@ usethis::use_package("png")
 usethis::use_package("grid")
 usethis::use_package("vegan")
 usethis::use_package("cowplot")
+usethis::use_package("cartography")
 
 #utiliser les pipes dans les fonctions
 #usethis::use_pipe() #does not work
