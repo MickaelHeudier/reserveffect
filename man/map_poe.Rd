@@ -2,13 +2,22 @@
 % Please edit documentation in R/plot_basic_maps.R
 \name{map_poe}
 \alias{map_poe}
-\title{Make map_poe}
+\title{Make map australia + nc : Figure 1 : heavy data}
 \usage{
 map_poe()
 }
+\arguments{
+\item{lat2}{}
+}
 \value{
+
+
 
 }
 \description{
+Make map australia + nc : Figure 1 : heavy data
+}
+\examples{
 Make map_poe
+
 }

@@ -15,42 +15,11 @@ dir.create("data/telemetry")
 dir.create("outputs/poe_on_effort")
 
 #declare package dependancies
-usethis::use_package("viridis")
-usethis::use_package("OpenStreetMap")
-usethis::use_package("dplyr")
-usethis::use_package("readr")
-usethis::use_package("magrittr")
-usethis::use_package("ggplot2")
-usethis::use_package("ggforce")
-usethis::use_package("forcats")
-usethis::use_package("stringr")
-usethis::use_package("sf")
-usethis::use_package("readxl")
-usethis::use_package("here")
-usethis::use_package("sp")
-usethis::use_package("sf")
-usethis::use_package("raster")
-usethis::use_package("lubridate")
-usethis::use_package("rgeos")
-usethis::use_package("rgdal")
-usethis::use_package("scales")
-usethis::use_package("maptools")
-usethis::use_package("ggsn")
-usethis::use_package("gridExtra")
-usethis::use_package("RColorBrewer")
-usethis::use_package("ggpubr")
-usethis::use_package("car")
-usethis::use_package("ggsignif")
-usethis::use_package("rcompanion")
-usethis::use_package("png")
-usethis::use_package("grid")
-usethis::use_package("vegan")
-usethis::use_package("cowplot")
-usethis::use_package("cartography")
+# usethis::use_package("viridis")
 
 #utiliser les pipes dans les fonctions
-#usethis::use_pipe() #does not work
-library(magrittr)
+usethis::use_pipe()
+
 
 #update NAMESPACE and add .Rd file for each function in man folder
 devtools::document()
@@ -70,3 +39,6 @@ ls -al ~/.ssh
 
 #uncommit
 git reset --soft HEAD~1
+
+#install all dependencies
+remotes::install_deps(upgrade = "never")

@@ -1313,7 +1313,7 @@ boxplot_density_allen_coral_mpa_with_megafauna_image_log <- function(df, species
   # p = ggplot2::ggplot(data = df_no0, ggplot2::aes(x = density, y = class)) + ggplot2::geom_boxplot(ggplot2::aes(col=class)) +
   #   ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = 4, xmax = 6, ymin = 0.9, ymax = 1.4)
 
-  p = ggpubr::ggboxplot(df_no0, x = "class2", y = "density2", xlab = "", ylab = "Log Density (indiv / 100 ha)",fill = "mpa_status")
+  p = ggpubr::ggboxplot(df_no0, x = "class2", y = "density2", xlab = "", ylab = "Log density (indiv / 100 ha)",fill = "mpa_status")
 
   p = ggpubr::ggpar(p, orientation = "horizontal")
   #legend
@@ -1321,7 +1321,7 @@ boxplot_density_allen_coral_mpa_with_megafauna_image_log <- function(df, species
   #Title
   p = ggpubr::ggpar(p,
         title = species_title,
-        font.main = c(14,"bold", "black"),
+        font.main = c(14, face = "bold"),
         font.x = c(14, "plain", "black"),
         font.y = c(14, "plain", "black"))
 
@@ -2058,7 +2058,7 @@ make_twoway_test_barplot_allen_coral_mpa <- function(df, species){
 #' @export
 #'
 
-make_twoway_test_barplot_allen_coral_mpa_with_all_species <- function(df, species1, species2, species3, species4, species5){
+make_twoway_test_barplot_allen_coral_mpa_with_all_species_mpa_class2 <- function(df, species1, species2, species3, species4, species5){
 
   df %>%
     dplyr::mutate(density1 = get(paste0("density_", species1))) %>%
@@ -2169,9 +2169,409 @@ make_twoway_test_barplot_allen_coral_mpa_with_all_species <- function(df, specie
 
 
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/twoway_test_barplot_allen_coral_mpa_with_all_species.png")), p, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/twoway_test_barplot_allen_coral_mpa_with_all_species_mpa_class2.png")), p, width = 7, height = 5)
 
 }
+
+
+#' Barplot with all species : Make two-way non parametric test (scheirerRayHare test) for density per mpa status and Allen coral habitat and barplot of the result
+#'
+#' @param species1
+#' @param species2
+#' @param species3
+#' @param species4
+#' @param species5
+#' @param df
+#'
+#' @return
+#' @export
+#'
+
+make_twoway_test_barplot_allen_coral_mpa_with_all_species_class2_mpa <- function(df, species1, species2, species3, species4, species5){
+
+  df %>%
+    dplyr::mutate(density1 = get(paste0("density_", species1))) %>%
+    dplyr::mutate(density2 = get(paste0("density_", species2))) %>%
+    dplyr::mutate(density3 = get(paste0("density_", species3))) %>%
+    dplyr::mutate(density4 = get(paste0("density_", species4))) %>%
+    dplyr::mutate(density5 = get(paste0("density_", species5))) %>%
+    dplyr::mutate(class2 = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea"))) -> df
+
+  # remove cells corresponding to habitats that do not have both occurrences of mpa_status following
+  # table(df$mpa_status, df$coral_hab)
+  # channel, deep lagoon, main land, pass reef flat, pass
+  # df %>%
+  #   dplyr::filter(!coral_hab %in% c("channel", "deep lagoon", "main land", "pass reef flat", "pass")) ->  df
+  #
+  # https://rcompanion.org/handbook/F_14.html
+  # The Scheirer Ray Hare test is a nonparametric test used for a two-way factorial experiment.
+
+  res1 = rcompanion::scheirerRayHare(density1 ~ class2 + mpa_status, data = df)
+  res2 = rcompanion::scheirerRayHare(density2 ~ class2 + mpa_status, data = df)
+  res3 = rcompanion::scheirerRayHare(density3 ~ class2 + mpa_status, data = df)
+  res4 = rcompanion::scheirerRayHare(density4 ~ class2 + mpa_status, data = df)
+  res5 = rcompanion::scheirerRayHare(density5 ~ class2 + mpa_status, data = df)
+
+  print(res1)
+  print(res2)
+  print(res3)
+  print(res4)
+  print(res5)
+
+
+
+  # make new dataframe, table of results
+  new = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+                   var = c("Habitat", "Reserve", "Reserve * Habitat", "Habitat", "Reserve", "Reserve * Habitat", "Habitat", "Reserve", "Reserve * Habitat", "Habitat", "Reserve", "Reserve * Habitat", "Habitat", "Reserve", "Reserve * Habitat"),
+                   effect =  c(res1$H[1:3], res2$H[1:3], res3$H[1:3], res4$H[1:3], res5$H[1:3]),
+                   pval = c(res1$p.value[1:3], res2$p.value[1:3], res3$p.value[1:3], res4$p.value[1:3], res5$p.value[1:3]),
+                   signif = rep(NA, length(15)))
+  # signif = rep(NA, length(new$pval))
+
+  #add significance symbol
+  # new$signif = ifelse(new$pval < 0.05, "*", "ns")
+
+
+  for (i in 1:length(new$pval)){
+    if(new$pval[i] > 0.05) {new$signif[i] <- "ns"}
+    if(new$pval[i] <= 0.05 & new$pval[i] > 0.01) {new$signif[i] <- "*"}
+    if(new$pval[i] <= 0.01 & new$pval[i] > 0.001) {new$signif[i] <- "**"}
+    if(new$pval[i] <= 0.001) {new$signif[i] <- "***"}
+  }
+
+
+  #max effect for plotting
+  maxeffect = max(new$effect)
+  #effect variable
+  effect = new$effect
+  # #max effect per effect
+  # effect_per_effect = (new$effect[species=="species1"&var=="Mpa"] + 2)
+
+  #significance vector for plotting
+  signif = new$signif
+
+  #defined positions for correct order of bars
+  positions <- c("Habitat", "Reserve", "Reserve * Habitat")
+  #defined positions for correct order of species
+  new$Species = factor(new$Species, levels = c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray"))
+  #defined positions for correct order of var
+  new$var = factor(new$var, levels = c("Habitat", "Reserve",  "Reserve * Habitat"))
+  #defined facet wrap names
+  new_sp_names = c("Dugong", "Sea turtle", "Shark", "Dasyat. ray", "Myliob. ray")
+  names(new_sp_names) <- c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
+
+  # # Create a grouped bar graph
+  p = ggplot2::ggplot(new, ggplot2::aes(x = var, y = effect, fill = var)) +
+    ggplot2::geom_col() +
+    # ggplot2::scale_fill_manual(values = c("yellow", "dodgerblue4", "skyblue3")) +
+    ggplot2::scale_fill_manual(values = c("black", "yellow",  "darkgrey"), labels = c("Habitat", "MPA",  "MPA * Habitat")) +
+    ggplot2::facet_wrap(~Species, nrow = 1, scales = "free_x", labeller = ggplot2::labeller(Species = new_sp_names)) +
+    ggplot2::scale_x_discrete(limits = positions) +
+    # ggplot2::scale_y_continuous(position = "right") +
+    ggplot2::ylab("Effect") +
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.title.y = ggplot2::element_text(face = "bold", size = 15),
+                   axis.text.x = ggplot2::element_blank(),
+                   axis.text.y =  ggplot2::element_text(size = 15),
+                   axis.ticks.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_line(size = 0.5, linetype = 'solid',colour = "white"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   legend.position = "bottom",
+                   legend.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 16),
+                   legend.key.size = ggplot2::unit(1.5,"line"),
+                   strip.text.x = ggplot2::element_text(size = 15.5, color="black", face="bold")) +
+    ggplot2::geom_text(data = new, label = signif, nudge_y = 3, size = 7)
+
+  # # make dataframe for plotting with all species
+  # new2 = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+  #                   Variables = c("Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat","Reserve", "Habitat", "Reserve * Habitat"),
+  #                   Df =  c(res1$Df[1:3], res2$Df[1:3], res3$Df[1:3], res4$Df[1:3], res5$Df[1:3]),
+  #                   "Sum Sq" =  c(res1$"Sum Sq"[1:3], res2$"Sum Sq"[1:3], res3$"Sum Sq"[1:3], res4$"Sum Sq"[1:3], res5$"Sum Sq"[1:3]),
+  #                   H =  c(res1$H[1:3], res2$H[1:3], res3$H[1:3], res4$H[1:3], res5$H[1:3]),
+  #                   "p.value" = c(res1$"p.value"[1:3], res2$"p.value"[1:3], res3$"p.value"[1:3], res4$"p.value"[1:3], res5$"p.value"[1:3]),
+  #                   Signifiance = signif)
+  # #convert new2 to csv
+  # write.csv2(new2, file = "mycsvnew2")
+  #
+
+
+  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/twoway_test_barplot_allen_coral_mpa_with_all_species_class2_mpa.png")), p, width = 7, height = 5)
+
+}
+
+
+####without zero
+
+#' Barplot with all species : Make two-way non parametric test (scheirerRayHare test) for density per mpa status and Allen coral habitat and barplot of the result
+#'
+#' @param species1
+#' @param species2
+#' @param species3
+#' @param species4
+#' @param species5
+#' @param df
+#'
+#' @return
+#' @export
+#'
+
+make_twoway_test_barplot_allen_coral_mpa_with_all_species_mpa_class2_without_zero <- function(df, species1, species2, species3, species4, species5){
+
+  df %>%
+    dplyr::mutate(density1 = get(paste0("density_", species1))) %>%
+    dplyr::mutate(density2 = get(paste0("density_", species2))) %>%
+    dplyr::mutate(density3 = get(paste0("density_", species3))) %>%
+    dplyr::mutate(density4 = get(paste0("density_", species4))) %>%
+    dplyr::mutate(density5 = get(paste0("density_", species5))) %>%
+    dplyr::mutate(class2 = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea"))) -> df
+
+
+  #filter na
+  df %>%
+    dplyr::filter(!is.na(density1), !is.na(density2), !is.na(density3), !is.na(density4), !is.na(density5)) -> df
+
+  # remove cells corresponding to habitats that do not have both occurrences of mpa_status following
+  # table(df$mpa_status, df$coral_hab)
+  # channel, deep lagoon, main land, pass reef flat, pass
+  # df %>%
+  #   dplyr::filter(!coral_hab %in% c("channel", "deep lagoon", "main land", "pass reef flat", "pass")) ->  df
+  #
+  # https://rcompanion.org/handbook/F_14.html
+  # The Scheirer Ray Hare test is a nonparametric test used for a two-way factorial experiment.
+
+  res1 = rcompanion::scheirerRayHare(density1 ~ mpa_status + class2, data = df)
+  res2 = rcompanion::scheirerRayHare(density2 ~ mpa_status + class2, data = df)
+  res3 = rcompanion::scheirerRayHare(density3 ~ mpa_status + class2, data = df)
+  res4 = rcompanion::scheirerRayHare(density4 ~ mpa_status + class2, data = df)
+  res5 = rcompanion::scheirerRayHare(density5 ~ mpa_status + class2, data = df)
+
+  print(res1)
+  print(res2)
+  print(res3)
+  print(res4)
+  print(res5)
+
+
+
+  # make new dataframe, table of results
+  new = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+                   var = c("Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat","Reserve", "Habitat", "Reserve * Habitat"),
+                   effect =  c(res1$H[1:3], res2$H[1:3], res3$H[1:3], res4$H[1:3], res5$H[1:3]),
+                   pval = c(res1$p.value[1:3], res2$p.value[1:3], res3$p.value[1:3], res4$p.value[1:3], res5$p.value[1:3]),
+                   signif = rep(NA, length(15)))
+  # signif = rep(NA, length(new$pval))
+
+  #add significance symbol
+  # new$signif = ifelse(new$pval < 0.05, "*", "ns")
+
+
+  for (i in 1:length(new$pval)){
+    if(new$pval[i] > 0.05) {new$signif[i] <- "ns"}
+    if(new$pval[i] <= 0.05 & new$pval[i] > 0.01) {new$signif[i] <- "*"}
+    if(new$pval[i] <= 0.01 & new$pval[i] > 0.001) {new$signif[i] <- "**"}
+    if(new$pval[i] <= 0.001) {new$signif[i] <- "***"}
+  }
+
+
+  #max effect for plotting
+  maxeffect = max(new$effect)
+  #effect variable
+  effect = new$effect
+  # #max effect per effect
+  # effect_per_effect = (new$effect[species=="species1"&var=="Mpa"] + 2)
+
+  #significance vector for plotting
+  signif = new$signif
+
+  #defined positions for correct order of bars
+  positions <- c("Reserve", "Habitat", "Reserve * Habitat")
+  #defined positions for correct order of species
+  new$Species = factor(new$Species, levels = c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray"))
+  #defined positions for correct order of var
+  new$var = factor(new$var, levels = c("Reserve", "Habitat", "Reserve * Habitat"))
+  #defined facet wrap names
+  new_sp_names = c("Dugong", "Sea turtle", "Shark", "Dasyat. ray", "Myliob. ray")
+  names(new_sp_names) <- c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
+
+  # # Create a grouped bar graph
+  p = ggplot2::ggplot(new, ggplot2::aes(x = var, y = effect, fill = var)) +
+    ggplot2::geom_col() +
+    # ggplot2::scale_fill_manual(values = c("yellow", "dodgerblue4", "skyblue3")) +
+    ggplot2::scale_fill_manual(values = c("yellow", "black", "darkgrey"), labels = c("MPA", "Habitat", "MPA * Habitat")) +
+    ggplot2::facet_wrap(~Species, nrow = 1, scales = "free_x", labeller = ggplot2::labeller(Species = new_sp_names)) +
+    ggplot2::scale_x_discrete(limits = positions) +
+    # ggplot2::scale_y_continuous(position = "right") +
+    ggplot2::ylab("Effect") +
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.title.y = ggplot2::element_text(face = "bold", size = 15),
+                   axis.text.x = ggplot2::element_blank(),
+                   axis.text.y =  ggplot2::element_text(size = 15),
+                   axis.ticks.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_line(size = 0.5, linetype = 'solid',colour = "white"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   legend.position = "bottom",
+                   legend.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 16),
+                   legend.key.size = ggplot2::unit(1.5,"line"),
+                   strip.text.x = ggplot2::element_text(size = 15.5, color="black", face="bold")) +
+    ggplot2::geom_text(data = new, label = signif, nudge_y = 3, size = 7)
+
+  # make dataframe for plotting with all species
+  new2 = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+                    Variables = c("Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat","Reserve", "Habitat", "Reserve * Habitat"),
+                    Df =  c(res1$Df[1:3], res2$Df[1:3], res3$Df[1:3], res4$Df[1:3], res5$Df[1:3]),
+                    "Sum Sq" =  c(res1$"Sum Sq"[1:3], res2$"Sum Sq"[1:3], res3$"Sum Sq"[1:3], res4$"Sum Sq"[1:3], res5$"Sum Sq"[1:3]),
+                    H =  c(res1$H[1:3], res2$H[1:3], res3$H[1:3], res4$H[1:3], res5$H[1:3]),
+                    "p.value" = c(res1$"p.value"[1:3], res2$"p.value"[1:3], res3$"p.value"[1:3], res4$"p.value"[1:3], res5$"p.value"[1:3]),
+                    Signifiance = signif)
+  #convert new2 to csv
+  write.csv2(new2, file = "mycsvnew2")
+
+
+
+  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/twoway_test_barplot_allen_coral_mpa_with_all_species_mpa_class2_without_zero.png")), p, width = 7, height = 5)
+
+}
+
+
+#' Barplot with all species : Make two-way non parametric test (scheirerRayHare test) for density per mpa status and Allen coral habitat and barplot of the result
+#'
+#' @param species1
+#' @param species2
+#' @param species3
+#' @param species4
+#' @param species5
+#' @param df
+#'
+#' @return
+#' @export
+#'
+
+make_twoway_test_barplot_allen_coral_mpa_with_all_species_class2_mpa_without_zero <- function(df, species1, species2, species3, species4, species5){
+
+  df %>%
+    dplyr::mutate(density1 = get(paste0("density_", species1))) %>%
+    dplyr::mutate(density2 = get(paste0("density_", species2))) %>%
+    dplyr::mutate(density3 = get(paste0("density_", species3))) %>%
+    dplyr::mutate(density4 = get(paste0("density_", species4))) %>%
+    dplyr::mutate(density5 = get(paste0("density_", species5))) %>%
+    dplyr::mutate(class2 = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea"))) -> df
+
+  #filter na
+  df %>%
+    dplyr::filter(!is.na(density1), !is.na(density2), !is.na(density3), !is.na(density4), !is.na(density5)) -> df
+
+
+  # remove cells corresponding to habitats that do not have both occurrences of mpa_status following
+  # table(df$mpa_status, df$coral_hab)
+  # channel, deep lagoon, main land, pass reef flat, pass
+  # df %>%
+  #   dplyr::filter(!coral_hab %in% c("channel", "deep lagoon", "main land", "pass reef flat", "pass")) ->  df
+  #
+  # https://rcompanion.org/handbook/F_14.html
+  # The Scheirer Ray Hare test is a nonparametric test used for a two-way factorial experiment.
+
+  res1 = rcompanion::scheirerRayHare(density1 ~ class2 + mpa_status, data = df)
+  res2 = rcompanion::scheirerRayHare(density2 ~ class2 + mpa_status, data = df)
+  res3 = rcompanion::scheirerRayHare(density3 ~ class2 + mpa_status, data = df)
+  res4 = rcompanion::scheirerRayHare(density4 ~ class2 + mpa_status, data = df)
+  res5 = rcompanion::scheirerRayHare(density5 ~ class2 + mpa_status, data = df)
+
+  print(res1)
+  print(res2)
+  print(res3)
+  print(res4)
+  print(res5)
+
+
+
+  # make new dataframe, table of results
+  new = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+                   var = c("Habitat", "Reserve", "Reserve * Habitat", "Habitat", "Reserve", "Reserve * Habitat", "Habitat", "Reserve", "Reserve * Habitat", "Habitat", "Reserve", "Reserve * Habitat", "Habitat", "Reserve", "Reserve * Habitat"),
+                   effect =  c(res1$H[1:3], res2$H[1:3], res3$H[1:3], res4$H[1:3], res5$H[1:3]),
+                   pval = c(res1$p.value[1:3], res2$p.value[1:3], res3$p.value[1:3], res4$p.value[1:3], res5$p.value[1:3]),
+                   signif = rep(NA, length(15)))
+  # signif = rep(NA, length(new$pval))
+
+  #add significance symbol
+  # new$signif = ifelse(new$pval < 0.05, "*", "ns")
+
+
+  for (i in 1:length(new$pval)){
+    if(new$pval[i] > 0.05) {new$signif[i] <- "ns"}
+    if(new$pval[i] <= 0.05 & new$pval[i] > 0.01) {new$signif[i] <- "*"}
+    if(new$pval[i] <= 0.01 & new$pval[i] > 0.001) {new$signif[i] <- "**"}
+    if(new$pval[i] <= 0.001) {new$signif[i] <- "***"}
+  }
+
+
+  #max effect for plotting
+  maxeffect = max(new$effect)
+  #effect variable
+  effect = new$effect
+  # #max effect per effect
+  # effect_per_effect = (new$effect[species=="species1"&var=="Mpa"] + 2)
+
+  #significance vector for plotting
+  signif = new$signif
+
+  #defined positions for correct order of bars
+  positions <- c("Habitat", "Reserve", "Reserve * Habitat")
+  #defined positions for correct order of species
+  new$Species = factor(new$Species, levels = c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray"))
+  #defined positions for correct order of var
+  new$var = factor(new$var, levels = c("Habitat", "Reserve",  "Reserve * Habitat"))
+  #defined facet wrap names
+  new_sp_names = c("Dugong", "Sea turtle", "Shark", "Dasyat. ray", "Myliob. ray")
+  names(new_sp_names) <- c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
+
+  # # Create a grouped bar graph
+  p = ggplot2::ggplot(new, ggplot2::aes(x = var, y = effect, fill = var)) +
+    ggplot2::geom_col() +
+    # ggplot2::scale_fill_manual(values = c("yellow", "dodgerblue4", "skyblue3")) +
+    ggplot2::scale_fill_manual(values = c("black", "yellow",  "darkgrey"), labels = c("Habitat", "MPA",  "MPA * Habitat")) +
+    ggplot2::facet_wrap(~Species, nrow = 1, scales = "free_x", labeller = ggplot2::labeller(Species = new_sp_names)) +
+    ggplot2::scale_x_discrete(limits = positions) +
+    # ggplot2::scale_y_continuous(position = "right") +
+    ggplot2::ylab("Effect") +
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.title.y = ggplot2::element_text(face = "bold", size = 15),
+                   axis.text.x = ggplot2::element_blank(),
+                   axis.text.y =  ggplot2::element_text(size = 15),
+                   axis.ticks.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_line(size = 0.5, linetype = 'solid',colour = "white"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   legend.position = "bottom",
+                   legend.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 16),
+                   legend.key.size = ggplot2::unit(1.5,"line"),
+                   strip.text.x = ggplot2::element_text(size = 15.5, color="black", face="bold")) +
+    ggplot2::geom_text(data = new, label = signif, nudge_y = 3, size = 7)
+
+  # # make dataframe for plotting with all species
+  # new2 = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+  #                   Variables = c("Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat","Reserve", "Habitat", "Reserve * Habitat"),
+  #                   Df =  c(res1$Df[1:3], res2$Df[1:3], res3$Df[1:3], res4$Df[1:3], res5$Df[1:3]),
+  #                   "Sum Sq" =  c(res1$"Sum Sq"[1:3], res2$"Sum Sq"[1:3], res3$"Sum Sq"[1:3], res4$"Sum Sq"[1:3], res5$"Sum Sq"[1:3]),
+  #                   H =  c(res1$H[1:3], res2$H[1:3], res3$H[1:3], res4$H[1:3], res5$H[1:3]),
+  #                   "p.value" = c(res1$"p.value"[1:3], res2$"p.value"[1:3], res3$"p.value"[1:3], res4$"p.value"[1:3], res5$"p.value"[1:3]),
+  #                   Signifiance = signif)
+  # #convert new2 to csv
+  # write.csv2(new2, file = "mycsvnew2")
+  #
+
+
+  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/twoway_test_barplot_allen_coral_mpa_with_all_species_class2_mpa_without_zero.png")), p, width = 7, height = 5)
+
+}
+
 
 
 
@@ -2211,19 +2611,40 @@ make_permanova_barplot_allen_coral_mpa <- function(df, species){
   #   dplyr::mutate(log_density_Dugong_certain = log(density_Dugong_certain))
 
   #convert data frame (help)
-  df %>%
-    dplyr::select(id, density_Dugong_certain, density_Turtle, density_Shark, density_Round_ray, density_Eagle_ray) -> df_response
+  # df %>%
+  #   dplyr::select(id, density_Dugong_certain, density_Turtle, density_Shark, density_Round_ray, density_Eagle_ray) -> df_response
+
+
+  #convert data frame (help)
+  # df %>%
+  #   dplyr::select(id, density_Shark) -> df_response
+
+  #density taxa
+  if (species == "Dugong_certain") {
+    density_taxa = df$density_Dugong_certain
+  }
+  if (species == "Turtle") {
+    density_taxa = df$density_Turtle
+  }
+  if (species == "Shark") {
+    density_taxa = df$density_Shark
+  }
+  if (species == "Round_ray") {
+    density_taxa = df$density_Round_ray
+  }
+  if (species == "Eagle_ray") {
+    density_taxa = df$density_Eagle_ray
+  }
 
   #convert data frame (help)
   df %>%
     dplyr::select(id, allen_coral_hab, mpa_status) -> df_env
 
   #permanova
-  permanova <- vegan::adonis(df_response ~ allen_coral_hab * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  permanova <- vegan::adonis(density_taxa ~ allen_coral_hab * mpa_status, data = df_env, permutations = 999, method = "euclidean")
 
   # #test
   # permtest <- vegan::adonis2(dist(df_response) ~ allen_coral_hab*mpa_status, data= df_env, method = "euclidean",permutations = 999)
-
 
 
   print(permanova)
@@ -2232,3 +2653,678 @@ make_permanova_barplot_allen_coral_mpa <- function(df, species){
 
 
 
+#' Barplot with all species : Permanova _mpa_habitat_without_zero
+#'
+#' @param df
+#' @param species1
+#' @param species2
+#' @param species3
+#' @param species4
+#' @param species5
+#'
+#' @return
+#' @export
+#'
+#' @examples
+permanova_barplot_allen_coral_mpa_with_all_species_mpa_habitat_without_zero <- function(df, species1, species2, species3, species4, species5){
+
+   df %>%
+    dplyr::mutate(density1 = get(paste0("density_", species1))) %>%
+    dplyr::filter(density1>0) %>%
+    dplyr::mutate(class = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea")))-> df1
+  df %>%
+    dplyr::mutate(density2 = get(paste0("density_", species2))) %>%
+    dplyr::filter(density2>0) %>%
+  dplyr::mutate(class = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea")))-> df2
+  df %>%
+    dplyr::mutate(density3 = get(paste0("density_", species3))) %>%
+    dplyr::filter(density3>0) %>%
+  dplyr::mutate(class = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea")))-> df3
+  df %>%
+    dplyr::mutate(density4 = get(paste0("density_", species4))) %>%
+    dplyr::filter(density4>0) %>%
+  dplyr::mutate(class = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea")))-> df4
+  df %>%
+    dplyr::mutate(density5 = get(paste0("density_", species5))) %>%
+    dplyr::filter(density5>0) %>%
+  dplyr::mutate(class = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea")))-> df5
+
+
+    #convert data frame (help)
+  df1 %>%
+    dplyr::select(id, density1, class, mpa_status) -> df_env1
+  df2 %>%
+    dplyr::select(id, density2, class, mpa_status) -> df_env2
+  df3 %>%
+    dplyr::select(id, density3, class, mpa_status) -> df_env3
+  df4 %>%
+    dplyr::select(id, density4, class, mpa_status) -> df_env4
+  df5 %>%
+    dplyr::select(id, density5, class, mpa_status) -> df_env5
+
+   # permanova
+  res1 = permanova <- vegan::adonis(density1 ~ mpa_status * class, data = df_env1, permutations = 999, method = "binomial")
+  res2 = permanova <- vegan::adonis(density2 ~ mpa_status * class, data = df_env2, permutations = 999, method = "binomial")
+  res3 = permanova <- vegan::adonis(density3 ~ mpa_status * class, data = df_env3, permutations = 999, method = "binomial")
+  res4 = permanova <- vegan::adonis(density4 ~ mpa_status * class, data = df_env4, permutations = 999, method = "binomial")
+  res5 = permanova <- vegan::adonis(density5 ~ mpa_status * class, data = df_env5, permutations = 999, method = "binomial")
+
+  print(res1)
+  print(res2)
+  print(res3)
+  print(res4)
+  print(res5)
+
+
+  # make new dataframe, table of results
+  new = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+                   var = c("Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat","Reserve", "Habitat", "Reserve * Habitat"),
+                   effect =  c(res1$aov.tab$F.Model[1:3], res2$aov.tab$F.Model[1:3], res3$aov.tab$F.Model[1:3], res4$aov.tab$F.Model[1:3], res5$aov.tab$F.Model[1:3]),
+                   pval = c(res1$aov.tab$`Pr(>F)`[1:3], res2$aov.tab$`Pr(>F)`[1:3], res3$aov.tab$`Pr(>F)`[1:3], res4$aov.tab$`Pr(>F)`[1:3], res5$aov.tab$`Pr(>F)`[1:3]),
+                   signif = rep(NA, length(15)))
+  # signif = rep(NA, length(new$pval))
+
+  #add significance symbol
+  # new$signif = ifelse(new$pval < 0.05, "*", "ns")
+  for (i in 1:length(new$pval)){
+    if(new$pval[i] > 0.05) {new$signif[i] <- "ns"}
+    if(new$pval[i] <= 0.05 & new$pval[i] > 0.01) {new$signif[i] <- "*"}
+    if(new$pval[i] <= 0.01 & new$pval[i] > 0.001) {new$signif[i] <- "**"}
+    if(new$pval[i] <= 0.001) {new$signif[i] <- "***"}
+  }
+
+
+  #max effect for plotting
+  maxeffect = max(new$effect)
+  #effect variable
+  effect = new$effect
+  # #max effect per effect
+  # effect_per_effect = (new$effect[species=="species1"&var=="Mpa"] + 2)
+
+  #significance vector for plotting
+  signif = new$signif
+
+  #defined positions for correct order of bars
+  positions <- c("Reserve", "Habitat", "Reserve * Habitat")
+  #defined positions for correct order of species
+  new$Species = factor(new$Species, levels = c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray"))
+  #defined positions for correct order of var
+  new$var = factor(new$var, levels = c("Reserve", "Habitat", "Reserve * Habitat"))
+  #defined facet wrap names
+  new_sp_names = c("Dugong", "Sea turtle", "Shark", "Dasyat. ray", "Myliob. ray")
+  names(new_sp_names) <- c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
+
+  # # Create a grouped bar graph
+  p = ggplot2::ggplot(new, ggplot2::aes(x = var, y = effect, fill = var)) +
+    ggplot2::geom_col()+
+    # ggplot2::scale_fill_manual(values = c("yellow", "dodgerblue4", "skyblue3")) +
+    ggplot2::scale_fill_manual(values = c("yellow", "black", "darkgrey"), labels = c("MPA", "Habitat", "MPA * Habitat")) +
+    ggplot2::facet_wrap(~Species, nrow = 1, scales = "free_x", labeller = ggplot2::labeller(Species = new_sp_names)) +
+    ggplot2::scale_x_discrete(limits = positions) +
+    # ggplot2::scale_y_continuous(position = "right") +
+    ggplot2::ylab("F-score") +
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.title.y = ggplot2::element_text(face = "bold", size = 15),
+                   axis.text.x = ggplot2::element_blank(),
+                   axis.text.y =  ggplot2::element_text(size = 15),
+                   axis.ticks.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_line(size = 0.5, linetype = 'solid',colour = "white"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   legend.position = "bottom",
+                   legend.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 16),
+                   legend.key.size = ggplot2::unit(1.5,"line"),
+                   strip.text.x = ggplot2::element_text(size = 15.5, color="black", face="bold")) +
+    ggplot2::geom_text(data = new, label = signif, nudge_y = 0.6, size = 6)
+
+  # make dataframe for plotting with all species
+  # new2 = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+  #                   Variables = c("Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat","Reserve", "Habitat", "Reserve * Habitat"),
+  #                   Df =  c(res1$Df[1:3], res2$Df[1:3], res3$Df[1:3], res4$Df[1:3], res5$Df[1:3]),
+  #                   "Sum Sq" =  c(res1$"Sum Sq"[1:3], res2$"Sum Sq"[1:3], res3$"Sum Sq"[1:3], res4$"Sum Sq"[1:3], res5$"Sum Sq"[1:3]),
+  #                   H =  c(res1$H[1:3], res2$H[1:3], res3$H[1:3], res4$H[1:3], res5$H[1:3]),
+  #                   "p.value" = c(res1$"p.value"[1:3], res2$"p.value"[1:3], res3$"p.value"[1:3], res4$"p.value"[1:3], res5$"p.value"[1:3]),
+  #                   Signifiance = signif)
+  # #convert new2 to csv
+  # write.csv2(new2, file = "mycsvnew2")
+
+
+  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/permanova_barplot_allen_coral_mpa_with_all_species_mpa_habitat_without_zero.png")), p, width = 7, height = 5)
+
+}
+
+
+#' Barplot with all species : Permanova _habitat_mpa_without_zero
+#'
+#' @param df
+#' @param species1
+#' @param species2
+#' @param species3
+#' @param species4
+#' @param species5
+#'
+#' @return
+#' @export
+#'
+#' @examples
+permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa_without_zero <- function(df, species1, species2, species3, species4, species5){
+  df %>%
+    dplyr::mutate(density1 = get(paste0("density_", species1))) %>%
+    dplyr::filter(density1>0) %>%
+    dplyr::mutate(class = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea")))-> df1
+  df %>%
+    dplyr::mutate(density2 = get(paste0("density_", species2))) %>%
+    dplyr::filter(density2>0) %>%
+    dplyr::mutate(class = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea")))-> df2
+  df %>%
+    dplyr::mutate(density3 = get(paste0("density_", species3))) %>%
+    dplyr::filter(density3>0) %>%
+    dplyr::mutate(class = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea")))-> df3
+  df %>%
+    dplyr::mutate(density4 = get(paste0("density_", species4))) %>%
+    dplyr::filter(density4>0) %>%
+    dplyr::mutate(class = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea")))-> df4
+  df %>%
+    dplyr::mutate(density5 = get(paste0("density_", species5))) %>%
+    dplyr::filter(density5>0) %>%
+    dplyr::mutate(class = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea")))-> df5
+
+
+  #convert data frame (help)
+  df1 %>%
+    dplyr::select(id, density1, class, mpa_status) -> df_env1
+  df2 %>%
+    dplyr::select(id, density2, class, mpa_status) -> df_env2
+  df3 %>%
+    dplyr::select(id, density3, class, mpa_status) -> df_env3
+  df4 %>%
+    dplyr::select(id, density4, class, mpa_status) -> df_env4
+  df5 %>%
+    dplyr::select(id, density5, class, mpa_status) -> df_env5
+
+  # permanova
+  res1 = permanova <- vegan::adonis(density1 ~ class * mpa_status, data = df_env1, permutations = 999, method = "euclidean")
+  res2 = permanova <- vegan::adonis(density2 ~ class * mpa_status, data = df_env2, permutations = 999, method = "euclidean")
+  res3 = permanova <- vegan::adonis(density3 ~ class * mpa_status, data = df_env3, permutations = 999, method = "euclidean")
+  res4 = permanova <- vegan::adonis(density4 ~ class * mpa_status, data = df_env4, permutations = 999, method = "euclidean")
+  res5 = permanova <- vegan::adonis(density5 ~ class * mpa_status, data = df_env5, permutations = 999, method = "euclidean")
+
+  print(res1)
+  print(res2)
+  print(res3)
+  print(res4)
+  print(res5)
+
+
+  # make new dataframe, table of results
+  new = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+                   var = c("Habitat","Reserve","Reserve * Habitat", "Habitat","Reserve","Reserve * Habitat", "Habitat","Reserve","Reserve * Habitat", "Habitat","Reserve","Reserve * Habitat", "Habitat","Reserve","Reserve * Habitat"),
+                   effect =  c(res1$aov.tab$F.Model[1:3], res2$aov.tab$F.Model[1:3], res3$aov.tab$F.Model[1:3], res4$aov.tab$F.Model[1:3], res5$aov.tab$F.Model[1:3]),
+                   pval = c(res1$aov.tab$`Pr(>F)`[1:3], res2$aov.tab$`Pr(>F)`[1:3], res3$aov.tab$`Pr(>F)`[1:3], res4$aov.tab$`Pr(>F)`[1:3], res5$aov.tab$`Pr(>F)`[1:3]),
+                   signif = rep(NA, length(15)))
+  # signif = rep(NA, length(new$pval))
+
+  #add significance symbol
+  # new$signif = ifelse(new$pval < 0.05, "*", "ns")
+  for (i in 1:length(new$pval)){
+    if(new$pval[i] > 0.05) {new$signif[i] <- "ns"}
+    if(new$pval[i] <= 0.05 & new$pval[i] > 0.01) {new$signif[i] <- "*"}
+    if(new$pval[i] <= 0.01 & new$pval[i] > 0.001) {new$signif[i] <- "**"}
+    if(new$pval[i] <= 0.001) {new$signif[i] <- "***"}
+  }
+
+
+  #max effect for plotting
+  maxeffect = max(new$effect)
+  #effect variable
+  effect = new$effect
+  # #max effect per effect
+  # effect_per_effect = (new$effect[species=="species1"&var=="Mpa"] + 2)
+
+  #significance vector for plotting
+  signif = new$signif
+
+  #defined positions for correct order of bars
+  positions <- c("Habitat","Reserve","Reserve * Habitat")
+  #defined positions for correct order of species
+  new$Species = factor(new$Species, levels = c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray"))
+  #defined positions for correct order of var
+  new$var = factor(new$var, levels = c("Habitat","Reserve","Reserve * Habitat"))
+  #defined facet wrap names
+  new_sp_names = c("Dugong", "Sea turtle", "Shark", "Dasyat. ray", "Myliob. ray")
+  names(new_sp_names) <- c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
+
+  # # Create a grouped bar graph
+  p = ggplot2::ggplot(new, ggplot2::aes(x = var, y = effect, fill = var)) +
+    ggplot2::geom_col()+
+    # ggplot2::scale_fill_manual(values = c("yellow", "dodgerblue4", "skyblue3")) +
+    ggplot2::scale_fill_manual(values = c("black","yellow", "darkgrey"), labels = c("Habitat","MPA", "MPA * Habitat")) +
+    ggplot2::facet_wrap(~Species, nrow = 1, scales = "free_x", labeller = ggplot2::labeller(Species = new_sp_names)) +
+    ggplot2::scale_x_discrete(limits = positions) +
+    # ggplot2::scale_y_continuous(position = "right") +
+    ggplot2::ylab("F-score") +
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.title.y = ggplot2::element_text(face = "bold", size = 15),
+                   axis.text.x = ggplot2::element_blank(),
+                   axis.text.y =  ggplot2::element_text(size = 15),
+                   axis.ticks.x = ggplot2::element_blank(),
+                   strip.background = ggplot2::element_rect(fill="white"),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_line(size = 0.5, linetype = 'solid',colour = "white"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   legend.position = "bottom",
+                   legend.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 16),
+                   legend.key.size = ggplot2::unit(1.5,"line"),
+                   strip.text.x = ggplot2::element_text(size = 15.5, color="black", face="bold")) +
+    ggplot2::geom_text(data = new, label = signif, nudge_y = 0.6, size = 6)
+
+  # make dataframe for plotting with all species
+  # new2 = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+  #                   Variables = c("Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat","Reserve", "Habitat", "Reserve * Habitat"),
+  #                   Df =  c(res1$Df[1:3], res2$Df[1:3], res3$Df[1:3], res4$Df[1:3], res5$Df[1:3]),
+  #                   "Sum Sq" =  c(res1$"Sum Sq"[1:3], res2$"Sum Sq"[1:3], res3$"Sum Sq"[1:3], res4$"Sum Sq"[1:3], res5$"Sum Sq"[1:3]),
+  #                   H =  c(res1$H[1:3], res2$H[1:3], res3$H[1:3], res4$H[1:3], res5$H[1:3]),
+  #                   "p.value" = c(res1$"p.value"[1:3], res2$"p.value"[1:3], res3$"p.value"[1:3], res4$"p.value"[1:3], res5$"p.value"[1:3]),
+  #                   Signifiance = signif)
+  # #convert new2 to csv
+  # write.csv2(new2, file = "mycsvnew2")
+
+
+  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa_without_zero.png")), p, width = 7, height = 5)
+
+}
+
+
+
+#### with zero
+
+#' Barplot with all species : Permanova _mpa_habitat
+#'
+#' @param df
+#' @param species1
+#' @param species2
+#' @param species3
+#' @param species4
+#' @param species5
+#'
+#' @return
+#' @export
+#'
+#' @examples
+permanova_barplot_allen_coral_mpa_with_all_species_mpa_habitat <- function(df, species1, species2, species3, species4, species5){
+
+  df %>%
+    dplyr::mutate(density1 = get(paste0("density_", species1))) %>%
+    dplyr::mutate(density2 = get(paste0("density_", species2))) %>%
+    dplyr::mutate(density3 = get(paste0("density_", species3))) %>%
+    dplyr::mutate(density4 = get(paste0("density_", species4))) %>%
+    dplyr::mutate(density5 = get(paste0("density_", species5))) %>%
+    dplyr::mutate(Habitat = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea"))) -> df
+
+
+  #filter na
+  df %>%
+    dplyr::filter(!is.na(density1), !is.na(density2), !is.na(density3), !is.na(density4), !is.na(density5)) -> df
+  #
+  #convert data frame (help)
+  df %>%
+    dplyr::select(id, Habitat, mpa_status) -> df_env
+
+
+  # permanova
+  res1 = permanova <- vegan::adonis(df$density1 ~ mpa_status * Habitat, data = df_env, permutations = 999, method = "euclidean")
+  res2 = permanova <- vegan::adonis(df$density2 ~ mpa_status * Habitat, data = df_env, permutations = 999, method = "euclidean")
+  res3 = permanova <- vegan::adonis(df$density3 ~ mpa_status * Habitat, data = df_env, permutations = 999, method = "euclidean")
+  res4 = permanova <- vegan::adonis(df$density4 ~ mpa_status * Habitat, data = df_env, permutations = 999, method = "euclidean")
+  res5 = permanova <- vegan::adonis(df$density5 ~ mpa_status * Habitat, data = df_env, permutations = 999, method = "euclidean")
+
+  print(res1)
+  print(res2)
+  print(res3)
+  print(res4)
+  print(res5)
+
+
+  # make new dataframe, table of results
+  new = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+                   var = c("Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat","Reserve", "Habitat", "Reserve * Habitat"),
+                   effect =  c(res1$aov.tab$F.Model[1:3], res2$aov.tab$F.Model[1:3], res3$aov.tab$F.Model[1:3], res4$aov.tab$F.Model[1:3], res5$aov.tab$F.Model[1:3]),
+                   pval = c(res1$aov.tab$`Pr(>F)`[1:3], res2$aov.tab$`Pr(>F)`[1:3], res3$aov.tab$`Pr(>F)`[1:3], res4$aov.tab$`Pr(>F)`[1:3], res5$aov.tab$`Pr(>F)`[1:3]),
+                   signif = rep(NA, length(15)))
+  # signif = rep(NA, length(new$pval))
+
+  #add significance symbol
+  # new$signif = ifelse(new$pval < 0.05, "*", "ns")
+  for (i in 1:length(new$pval)){
+    if(new$pval[i] > 0.05) {new$signif[i] <- ""}
+    if(new$pval[i] <= 0.05 & new$pval[i] > 0.01) {new$signif[i] <- "*"}
+    if(new$pval[i] <= 0.01 & new$pval[i] > 0.001) {new$signif[i] <- "**"}
+    if(new$pval[i] <= 0.001) {new$signif[i] <- "***"}
+  }
+
+
+  #max effect for plotting
+  maxeffect = max(new$effect)
+  #effect variable
+  effect = new$effect
+  # #max effect per effect
+  # effect_per_effect = (new$effect[species=="species1"&var=="Mpa"] + 2)
+
+  #significance vector for plotting
+  signif = new$signif
+
+  #defined positions for correct order of bars
+  positions <- c("Reserve", "Habitat", "Reserve * Habitat")
+  #defined positions for correct order of species
+  new$Species = factor(new$Species, levels = c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray"))
+  #defined positions for correct order of var
+  new$var = factor(new$var, levels = c("Reserve", "Habitat", "Reserve * Habitat"))
+  #defined facet wrap names
+  new_sp_names = c("Dugong", "Sea turtle", "Shark", "Dasyat. ray", "Myliob. ray")
+  names(new_sp_names) <- c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
+
+  # # Create a grouped bar graph
+  p = ggplot2::ggplot(new, ggplot2::aes(x = var, y = effect, fill = var)) +
+    ggplot2::geom_col()+
+    # ggplot2::scale_fill_manual(values = c("yellow", "dodgerblue4", "skyblue3")) +
+    ggplot2::scale_fill_manual(values = c("yellow", "black", "darkgrey"), labels = c("MPA", "Habitat", "MPA * Habitat")) +
+    ggplot2::facet_wrap(~Species, nrow = 1, scales = "free_x", labeller = ggplot2::labeller(Species = new_sp_names)) +
+    ggplot2::scale_x_discrete(limits = positions) +
+    # ggplot2::scale_y_continuous(position = "right") +
+    ggplot2::ylab("F-score") +
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.title.y = ggplot2::element_text(face = "bold", size = 15),
+                   axis.text.x = ggplot2::element_blank(),
+                   axis.text.y =  ggplot2::element_text(size = 15),
+                   axis.ticks.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_line(size = 0.5, linetype = 'solid',colour = "white"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   legend.position = "bottom",
+                   legend.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 16),
+                   legend.key.size = ggplot2::unit(1.5,"line"),
+                   strip.text.x = ggplot2::element_text(size = 15.5, color="black", face="bold")) +
+    ggplot2::geom_text(data = new, label = signif, nudge_y = 0.6, size = 6)
+
+  # make dataframe for plotting with all species
+  # new2 = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+  #                   Variables = c("Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat","Reserve", "Habitat", "Reserve * Habitat"),
+  #                   Df =  c(res1$Df[1:3], res2$Df[1:3], res3$Df[1:3], res4$Df[1:3], res5$Df[1:3]),
+  #                   "Sum Sq" =  c(res1$"Sum Sq"[1:3], res2$"Sum Sq"[1:3], res3$"Sum Sq"[1:3], res4$"Sum Sq"[1:3], res5$"Sum Sq"[1:3]),
+  #                   H =  c(res1$H[1:3], res2$H[1:3], res3$H[1:3], res4$H[1:3], res5$H[1:3]),
+  #                   "p.value" = c(res1$"p.value"[1:3], res2$"p.value"[1:3], res3$"p.value"[1:3], res4$"p.value"[1:3], res5$"p.value"[1:3]),
+  #                   Signifiance = signif)
+  # #convert new2 to csv
+  # write.csv2(new2, file = "mycsvnew2")
+
+
+  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/permanova_barplot_allen_coral_mpa_with_all_species_mpa_habitat.png")), p, width = 7, height = 5)
+
+}
+
+
+#' Barplot with all species : Permanova habitat + mpa
+#'
+#' @param df
+#' @param species1
+#' @param species2
+#' @param species3
+#' @param species4
+#' @param species5
+#'
+#' @return
+#' @export
+#'
+#' @examples
+permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa <- function(df, species1, species2, species3, species4, species5){
+
+  df %>%
+    dplyr::mutate(density1 = get(paste0("density_", species1))) %>%
+    dplyr::mutate(density2 = get(paste0("density_", species2))) %>%
+    dplyr::mutate(density3 = get(paste0("density_", species3))) %>%
+    dplyr::mutate(density4 = get(paste0("density_", species4))) %>%
+    dplyr::mutate(density5 = get(paste0("density_", species5))) %>%
+    dplyr::mutate(Habitat = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea"))) -> df
+
+
+  #filter na
+  df %>%
+    dplyr::filter(!is.na(density1), !is.na(density2), !is.na(density3), !is.na(density4), !is.na(density5)) -> df
+
+  #convert data frame (help)
+  df %>%
+    dplyr::select(id, Habitat, mpa_status) -> df_env
+
+
+  # permanova
+  res1 = permanova <- vegan::adonis(df$density1 ~ Habitat * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  res2 = permanova <- vegan::adonis(df$density2 ~ Habitat * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  res3 = permanova <- vegan::adonis(df$density3 ~ Habitat * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  res4 = permanova <- vegan::adonis(df$density4 ~ Habitat * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  res5 = permanova <- vegan::adonis(df$density5 ~ Habitat * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+
+  print(res1)
+  print(res2)
+  print(res3)
+  print(res4)
+  print(res5)
+
+
+  # make new dataframe, table of results
+  new = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+                   var = c("Habitat","Reserve","Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve", "Habitat", "Reserve", "Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve"),
+                   effect =  c(res1$aov.tab$F.Model[1:3], res2$aov.tab$F.Model[1:3], res3$aov.tab$F.Model[1:3], res4$aov.tab$F.Model[1:3], res5$aov.tab$F.Model[1:3]),
+                   pval = c(res1$aov.tab$`Pr(>F)`[1:3], res2$aov.tab$`Pr(>F)`[1:3], res3$aov.tab$`Pr(>F)`[1:3], res4$aov.tab$`Pr(>F)`[1:3], res5$aov.tab$`Pr(>F)`[1:3]),
+                   signif = rep(NA, length(15)))
+  # signif = rep(NA, length(new$pval))
+
+  #add significance symbol
+  # new$signif = ifelse(new$pval < 0.05, "*", "ns")
+  for (i in 1:length(new$pval)){
+    if(new$pval[i] > 0.05) {new$signif[i] <- "ns"}
+    if(new$pval[i] <= 0.05 & new$pval[i] > 0.01) {new$signif[i] <- "*"}
+    if(new$pval[i] <= 0.01 & new$pval[i] > 0.001) {new$signif[i] <- "**"}
+    if(new$pval[i] <= 0.001) {new$signif[i] <- "***"}
+  }
+
+
+  #max effect for plotting
+  maxeffect = max(new$effect)
+  #effect variable
+  effect = new$effect
+  # #max effect per effect
+  # effect_per_effect = (new$effect[species=="species1"&var=="Mpa"] + 2)
+
+  #significance vector for plotting
+  signif = new$signif
+
+  #defined positions for correct order of bars
+  positions <- c("Habitat","Reserve","Habitat * Reserve")
+  #defined positions for correct order of species
+  new$Species = factor(new$Species, levels = c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray"))
+  #defined positions for correct order of var
+  new$var = factor(new$var, levels = c("Habitat","Reserve","Habitat * Reserve"))
+  #defined facet wrap names
+  new_sp_names = c("Dugong", "Sea turtle", "Shark", "Dasyat. ray", "Myliob. ray")
+  names(new_sp_names) <- c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
+
+  # # Create a grouped bar graph
+  p = ggplot2::ggplot(new, ggplot2::aes(x = var, y = effect, fill = var)) +
+    ggplot2::geom_col()+
+    # ggplot2::scale_fill_manual(values = c("yellow", "dodgerblue4", "skyblue3")) +
+    ggplot2::scale_fill_manual(values = c("black","yellow", "darkgrey"), labels = c("Habitat","MPA", "Habitat * MPA")) +
+    ggplot2::facet_wrap(~Species, nrow = 1, scales = "free_x", labeller = ggplot2::labeller(Species = new_sp_names)) +
+    ggplot2::scale_x_discrete(limits = positions) +
+    # ggplot2::scale_y_continuous(position = "right") +
+    ggplot2::ylab("F-score") +
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.title.y = ggplot2::element_text(size = 17),
+                   axis.text.x = ggplot2::element_blank(),
+                   axis.text.y =  ggplot2::element_text(size = 15),
+                   axis.ticks.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_line(size = 0.5, linetype = 'solid',colour = "white"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   legend.position = "bottom",
+                   legend.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 16),
+                   legend.key.size = ggplot2::unit(1.5,"line"),
+                   strip.text.x = ggplot2::element_text(size = 15.5, color="black")) +
+    ggplot2::geom_text(data = new, label = signif, nudge_y = 0.6, size = 6)
+
+  # make dataframe for plotting with all species
+  new2 = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+                    Variables = c("Habitat","Reserve","Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve", "Habitat", "Reserve", "Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve"),
+                    Df =  c(res1$aov.tab$Df[1:3], res2$aov.tab$Df[1:3], res3$aov.tab$Df[1:3], res4$aov.tab$Df[1:3], res5$aov.tab$Df[1:3]),
+                    F_score =  c(res1$aov.tab$F.Model[1:3], res2$aov.tab$F.Model[1:3], res3$aov.tab$F.Model[1:3], res4$aov.tab$F.Model[1:3], res5$aov.tab$F.Model[1:3]),
+                    "p.value" = c(res1$aov.tab$`Pr(>F)`[1:3], res2$aov.tab$`Pr(>F)`[1:3], res3$aov.tab$`Pr(>F)`[1:3], res4$aov.tab$`Pr(>F)`[1:3], res5$aov.tab$`Pr(>F)`[1:3]),
+                    Signifiance = signif)
+  # #convert new2 to csv
+  write.csv2(new2, here::here("outputs","data_permanova.csv"),row.names = FALSE )
+
+
+  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa.png")), p, width = 7, height = 5)
+
+}
+
+
+
+
+###### test LMperm
+
+#' Barplot with all species : LMperm
+#'
+#' @param df
+#' @param species1
+#' @param species2
+#' @param species3
+#' @param species4
+#' @param species5
+#'
+#' @return
+#' @export
+#'
+#' @examples
+lmperm_test_habitat_mpa <- function(df, species1, species2, species3, species4, species5){
+
+  df %>%
+    dplyr::mutate(density1 = get(paste0("density_", species1))) %>%
+    dplyr::mutate(density2 = get(paste0("density_", species2))) %>%
+    dplyr::mutate(density3 = get(paste0("density_", species3))) %>%
+    dplyr::mutate(density4 = get(paste0("density_", species4))) %>%
+    dplyr::mutate(density5 = get(paste0("density_", species5))) %>%
+    dplyr::mutate(Habitat = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea"))) -> df
+
+  # #mutate Na to 0
+  # df %>%
+  #   dplyr::mutate_at(df, c("density1", "density2", "density3", "density4", "density5"), ~replace(., is.na(.), 0)) -> df
+
+
+  #filter na
+  # df %>%
+  #   dplyr::filter(!is.na(density1), !is.na(density2), !is.na(density3), !is.na(density4), !is.na(density5)) -> df
+
+  #convert data frame (help)
+  df %>%
+    dplyr::select(id, Habitat, mpa_status) -> df_env
+
+
+  # LMperm
+  res1 = lmperm <- permuco::lmperm(df$density1 ~ Habitat * mpa_status, data = df_env, np = 5000, method = "freedman_lane", type = "permutation")
+  res2 = lmperm <- permuco::lmperm(df$density2 ~ Habitat * mpa_status, data = df_env, np = 5000, method = "freedman_lane", type = "permutation")
+  res3 = lmperm <- permuco::lmperm(df$density3 ~ Habitat * mpa_status, data = df_env, np = 5000, method = "freedman_lane", type = "permutation")
+  res4 = lmperm <- permuco::lmperm(df$density4 ~ Habitat * mpa_status, data = df_env, np = 5000, method = "freedman_lane", type = "permutation")
+  res5 = lmperm <- permuco::lmperm(df$density5 ~ Habitat * mpa_status, data = df_env, np = 5000, method = "freedman_lane", type = "permutation")
+
+  print(res1)
+  print(res2)
+  print(res3)
+  print(res4)
+  print(res5)
+  #
+  #
+  # # make new dataframe, table of results
+  # new = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+  #                  var = c("Habitat","Reserve","Reserve * Habitat", "Habitat","Reserve","Reserve * Habitat", "Habitat","Reserve","Reserve * Habitat", "Habitat","Reserve","Reserve * Habitat", "Habitat","Reserve","Reserve * Habitat"),
+  #                  effect =  c(res1$aov.tab$F.Model[1:3], res2$aov.tab$F.Model[1:3], res3$aov.tab$F.Model[1:3], res4$aov.tab$F.Model[1:3], res5$aov.tab$F.Model[1:3]),
+  #                  pval = c(res1$aov.tab$`Pr(>F)`[1:3], res2$aov.tab$`Pr(>F)`[1:3], res3$aov.tab$`Pr(>F)`[1:3], res4$aov.tab$`Pr(>F)`[1:3], res5$aov.tab$`Pr(>F)`[1:3]),
+  #                  signif = rep(NA, length(15)))
+  # # signif = rep(NA, length(new$pval))
+  #
+  # #add significance symbol
+  # # new$signif = ifelse(new$pval < 0.05, "*", "ns")
+  # for (i in 1:length(new$pval)){
+  #   if(new$pval[i] > 0.05) {new$signif[i] <- "ns"}
+  #   if(new$pval[i] <= 0.05 & new$pval[i] > 0.01) {new$signif[i] <- "*"}
+  #   if(new$pval[i] <= 0.01 & new$pval[i] > 0.001) {new$signif[i] <- "**"}
+  #   if(new$pval[i] <= 0.001) {new$signif[i] <- "***"}
+  # }
+  #
+  #
+  # #max effect for plotting
+  # maxeffect = max(new$effect)
+  # #effect variable
+  # effect = new$effect
+  # # #max effect per effect
+  # # effect_per_effect = (new$effect[species=="species1"&var=="Mpa"] + 2)
+  #
+  # #significance vector for plotting
+  # signif = new$signif
+  #
+  # #defined positions for correct order of bars
+  # positions <- c("Habitat","Reserve","Reserve * Habitat")
+  # #defined positions for correct order of species
+  # new$Species = factor(new$Species, levels = c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray"))
+  # #defined positions for correct order of var
+  # new$var = factor(new$var, levels = c("Habitat","Reserve","Reserve * Habitat"))
+  # #defined facet wrap names
+  # new_sp_names = c("Dugong", "Sea turtle", "Shark", "Dasyat. ray", "Myliob. ray")
+  # names(new_sp_names) <- c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
+  #
+  # # # Create a grouped bar graph
+  # p = ggplot2::ggplot(new, ggplot2::aes(x = var, y = effect, fill = var)) +
+  #   ggplot2::geom_col()+
+  #   # ggplot2::scale_fill_manual(values = c("yellow", "dodgerblue4", "skyblue3")) +
+  #   ggplot2::scale_fill_manual(values = c("black","yellow", "darkgrey"), labels = c("Habitat","MPA", "MPA * Habitat")) +
+  #   ggplot2::facet_wrap(~Species, nrow = 1, scales = "free_x", labeller = ggplot2::labeller(Species = new_sp_names)) +
+  #   ggplot2::scale_x_discrete(limits = positions) +
+  #   # ggplot2::scale_y_continuous(position = "right") +
+  #   ggplot2::ylab("F-score") +
+  #   ggplot2::xlab("") +
+  #   ggplot2::theme(axis.title.y = ggplot2::element_text(face = "bold", size = 15),
+  #                  axis.text.x = ggplot2::element_blank(),
+  #                  axis.text.y =  ggplot2::element_text(size = 15),
+  #                  axis.ticks.x = ggplot2::element_blank(),
+  #                  panel.background = ggplot2::element_rect(fill = "white", colour = "white",size = 0.5, linetype = "solid"),
+  #                  panel.grid.major = ggplot2::element_line(size = 0.5, linetype = 'solid',colour = "white"),
+  #                  panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
+  #                  plot.title = ggplot2::element_text(hjust = 0.5),
+  #                  legend.position = "bottom",
+  #                  legend.title = ggplot2::element_blank(),
+  #                  legend.text = ggplot2::element_text(size = 16),
+  #                  legend.key.size = ggplot2::unit(1.5,"line"),
+  #                  strip.text.x = ggplot2::element_text(size = 15.5, color="black", face="bold")) +
+  #   ggplot2::geom_text(data = new, label = signif, nudge_y = 0.6, size = 6)
+  #
+  # make dataframe for plotting with all species
+  # new2 = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+  #                   Variables = c("Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat", "Reserve", "Habitat", "Reserve * Habitat","Reserve", "Habitat", "Reserve * Habitat"),
+  #                   Df =  c(res1$Df[1:3], res2$Df[1:3], res3$Df[1:3], res4$Df[1:3], res5$Df[1:3]),
+  #                   "Sum Sq" =  c(res1$"Sum Sq"[1:3], res2$"Sum Sq"[1:3], res3$"Sum Sq"[1:3], res4$"Sum Sq"[1:3], res5$"Sum Sq"[1:3]),
+  #                   H =  c(res1$H[1:3], res2$H[1:3], res3$H[1:3], res4$H[1:3], res5$H[1:3]),
+  #                   "p.value" = c(res1$"p.value"[1:3], res2$"p.value"[1:3], res3$"p.value"[1:3], res4$"p.value"[1:3], res5$"p.value"[1:3]),
+  #                   Signifiance = signif)
+  # #convert new2 to csv
+  # write.csv2(new2, file = "mycsvnew2")
+
+
+  # ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa.png")), p, width = 7, height = 5)
+  #
+}

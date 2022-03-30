@@ -7,7 +7,7 @@
 make_grid(r)
 }
 \arguments{
-\item{r}{}
+\item{r}{raster of surveys extent}
 }
 \value{
 

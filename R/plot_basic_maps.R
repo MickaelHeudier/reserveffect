@@ -1,67 +1,37 @@
-#' Make map_nc_australia_poe
+#' Make map australia + nc : Figure 1 : heavy data
+#'
+#' @param lon1
+#' @param lon2
+#' @param lat1
+#' @param lat2
 #'
 #' @return
 #' @export
 #'
 #' @examples
-map_nc_australia_poe <- function(){
-
-   # Use raster::getData("ISO3") to see codes
-   australia <- raster::getData("GADM", country = "AUS", level = 0)
-   new_caledonia <- raster::getData("GADM", country = "NCL", level = 0)
-
-   # mar = c(bottom, left, top, right)
-   par(mar = c(4,3,2,3), bg = "white") +
-   plot(australia, xlim = c(142,167), ylim = c(-27.5,-10.5), col ="#999999", border = "black", lwd = 1, cex = 2)
-   plot(new_caledonia, col = "#999999", border = "black", lwd = 1, add = T)
-
-    #add arrow
-    #can't change arrow size
-    cartography::north(pos = "topleft", col = "black")
-    #add scalebar
-    cartography::barscale(pos = c(165.2,-27.9), unit = "km", lwd = 3, cex = 1.5, style = "pretty")
-
-    #add text
-    raster::text(145,-24.5, label = "AUSTRALIA", col = "white", cex = 1.8, font = 1)
-    raster::text(165,-18, label = "NEW\nCALEDONIA", col = "black", cex = 1.8, font = 1)
-    raster::text(164,-23, label = "Poé", col = "black", cex = 1.6, font = 1)
-    raster::text(154,-17, label = "Coral Sea", col = "black", cex = 1.6, font = 3)
-
-    ggplot2::ggsave(here::here(paste0("outputs/map_nc_australia_poe_raster", ".png")), map, width = 7, height = 5)
-
-}
-
-
-#' Make map_nc_australia
-#'
-#' @return
-#' @export
-#'
-#' @examples
-map_nc_australia <- function(){
-
-  australia <- raster::getData("GADM", country = "AUS", level = 0)
-  # Use raster::getData("ISO3") to see codes
-  new_caledonia <- raster::getData("GADM", country = "NCL", level = 0)
-  # mar = c(bottom, left, top, right)
-  par(mar = c(4,3,2,3), bg = "white")
-  plot(australia, xlim = c(142,167), ylim = c(-27.5,-10.5), col ="#999999", border = "black", lwd = 1, cex = 2)
-  plot(new_caledonia, col = "#999999", border = "black", lwd = 1, add = T)
-
-  #add arrow
-  #can't change arrow size
-  cartography::north(pos = "topleft", col = "black")
-  #add scalebar
-  cartography::barscale(pos = c(165.2,-27.9), unit = "km", lwd = 3, cex = 1.5, style = "pretty")
-
-  #add text
-  raster::text(145,-24.5, label = "AUSTRALIA", col = "white", cex = 1.8, font = 1)
-  raster::text(165.05,-17, label = "NEW\nCALEDONIA", col = "black", cex = 1.8, font = 1)
-  raster::text(154,-17, label = "Coral Sea", col = "black", cex = 1.6, font = 3)
-
-  ggplot2::ggsave(here::here(paste0("outputs/map_nc_australia_raster", ".png")), map, width = 7, height = 5)
-
-}
+# map_australia_nc <- function(lon1, lon2, lat1, lat2){
+#
+#     monde <- raster::getData("countries")
+#
+#     png("outputs/map_australia_nc_raster.png", width = 480, height = 360) #to save + dev.off()
+#
+#     par(mar = c(0.5,0.5,0.5,0.5), bg = "white")
+#     plot(monde, xlim = c(lon1 ,lon2), ylim = c(lat1,lat2), col = "#999999", border = "black", lwd = 1,)
+#
+#     #add arrow
+#     #can't change arrow size
+#     # cartography::north(pos = "topright", col = "black")
+#
+#     #add scalebar
+#     raster::scalebar(1000, type='bar', below = "Km")
+#
+#     #add text
+#     raster::text(132,-24.5, label = "AUSTRALIA", col = "white", cex = 1.8, font = 1)
+#     #write in two lines : \n
+#     raster::text(155.3,-17, label = "Coral\nSea", col = "black", cex = 1.6, font = 3)
+#
+#     dev.off()
+# }
 
 
 #' Make map_poe
@@ -74,19 +44,25 @@ map_poe <- function(){
 
   # Use raster::getData("ISO3") to see codes
   new_caledonia <- raster::getData("GADM", country = "NCL", level = 1)
+
+
+  png("outputs/map_poe_raster.png", width = 480, height = 360) #to save + dev.off()
+
   # mar = c(bottom, left, top, right)
-  par(mar = c(1.5,6,4,1), bg = "white")
-  plot(new_caledonia, xlim = c(163.5,168), ylim = c(-22,-20), col ="#999999", border = "black", lwd = 1, cex = 2) ; box()
+  par(mar = c(0.5,0.5,0.5,0.5), bg = "white")
+  plot(new_caledonia, xlim = c(163.56,168.2), ylim = c(-22.62,-19.6), col ="#999999", border = "black", lwd = 1, cex = 2) ; box()
   #add arrow
   #can't change arrow size
-  cartography::north(pos = "topleft", col = "black")
+  # cartography::north(pos = "topright", col = "black")
   #add scalebar
-  cartography::barscale(pos = c(167.45,-22.4), unit = "km", lwd = 3, cex = 1.5, style = "pretty")
+  # cartography::barscale(pos = c(167.79,-22.69), unit = "km", lwd = 3, cex = 1.5, style = "pretty")
+  raster::scalebar(100, type='bar', below = "Km", lonlat = TRUE, lwd = 100)
+  raster::text(165.88,-19.8, label = "NEW CALEDONIA", col = "black", cex = 1.8, font = 1)
 
   #add text
-  raster::text(165,-22, label = "Poé", col = "black", cex = 1.8, font = 1)
+  raster::text(164.7,-22.1, label = "Poé", col = "black", cex = 1.8, font = 1)
 
-  ggplot2::ggsave(here::here(paste0("outputs/map_poe_raster", ".png")), map, width = 7, height = 5)
+  dev.off()
 
 }
 
@@ -401,11 +377,13 @@ map_allen_coral_poly_satellite <- function(maplatlon, pa, cor, extent, lon1, lon
     ggplot2::geom_polygon(data = cor4, ggplot2::aes(x = long, y = lat, group = group, fill = id), alpha = 0.8) +
     # ggplot2::theme_minimal() +
     #legend
-    ggplot2::theme(legend.text = ggplot2::element_text(size = 11),
+    ggplot2::theme(legend.text = ggplot2::element_text(size = 13),
                    legend.key.size = ggplot2::unit(1.15,"line"),
                    legend.position = "bottom",
-                   axis.title.x =  ggplot2::element_text(size = 15),
-                   axis.title.y =  ggplot2::element_text(size = 15)) +
+                   axis.title.x =  ggplot2::element_blank(),
+                   axis.title.y =  ggplot2::element_blank(),
+                   axis.text = ggplot2::element_blank(),
+                   axis.ticks = ggplot2::element_blank()) +
     ggplot2::labs(fill = "") +
     #colors
     ggplot2::scale_fill_manual(values = rev(colorspace::qualitative_hcl(length(unique(cor4$id)), c = 70, l = 50))) +
@@ -636,11 +614,11 @@ map_transects_scalebar_mpa <- function(maplatlon, transects, pa, extent, lat1, l
     ggplot2::fortify(region = "NAME")
 
   map = OpenStreetMap::autoplot.OpenStreetMap(maplatlon) + ##convert OSM to ggplot2 format
-    ggplot2::geom_line(data = transects_fortify, ggplot2::aes(x = long, y = lat, group = id), col = "black", alpha = 1) + #transects in red
-    ggplot2::geom_polygon(data = pa2, ggplot2::aes(x = long, y = lat), col = "yellow", alpha = 0) +
+    ggplot2::geom_line(data = transects_fortify, ggplot2::aes(x = long, y = lat, group = id), col = "black", alpha = 1) + #transects in black
+    ggplot2::geom_polygon(data = pa2, ggplot2::aes(x = long, y = lat), col = "yellow", alpha = 0) + #mpa polygon in yellow
 
 
-    # #add north arrow (symbol 1 or 3) ###### BOTTOM LEFT ######
+    # # #add north arrow (symbol 1 or 3) ###### BOTTOM LEFT ######
     # ggsn::north(data = NULL,
     #             x.min = 165.258, x.max = 165.308, y.min = -21.631, y.max = -21.636,
     #             symbol = 1, scale = 3) +
@@ -648,18 +626,32 @@ map_transects_scalebar_mpa <- function(maplatlon, transects, pa, extent, lat1, l
     # #add scalebar
     # ggsn::scalebar(data = NULL, dist = dist, transform = TRUE, model = "WGS84", dist_unit = "km", height = 0.3,
     #                x.min = 165.236, x.max = 165.286, y.min = -21.633, y.max = -21.640,
-    #                st.dist = 0.5, st.color = "white", box.color = "black", border.size = 0.7, box.fill = c("white", "white"), st.size = 3.4) +
+    #                st.dist = 0.5, st.color = "black", box.color = "black", border.size = 0.7, box.fill = c("white", "black"), st.size = 3.4) +
 
 
-    # #add north arrow (symbol 1 or 3) ###### TOP RIGHT ######
-    ggsn::north(data = NULL,
-                x.min = 165.448, x.max = 165.468, y.min = -21.523, y.max = -21.529,
-                symbol = 1, scale = 2.8) +
+    # # #add north arrow (symbol 1 or 3) ###### TOP RIGHT ######
+    # ggsn::north(data = NULL,
+    #             x.min = 165.448, x.max = 165.468, y.min = -21.523, y.max = -21.529,
+    #             symbol = 1, scale = 2.8) +
+    #
+    # #add scalebar
+    # ggsn::scalebar(data = NULL, dist = dist, transform = TRUE, model = "WGS84", dist_unit = "km", height = 0.3,
+    #                x.min = 165.405, x.max = 165.425, y.min = -21.523, y.max = -21.529,
+    #                st.dist = 0.6, st.color = "white", box.color = "black", border.size = 0.7, box.fill = c("white", "white"), st.size = 3.4) +
 
-    #add scalebar
-    ggsn::scalebar(data = NULL, dist = dist, transform = TRUE, model = "WGS84", dist_unit = "km", height = 0.3,
-                   x.min = 165.405, x.max = 165.425, y.min = -21.523, y.max = -21.529,
-                   st.dist = 0.6, st.color = "white", box.color = "black", border.size = 0.7, box.fill = c("white", "white"), st.size = 3.4) +
+
+    # option 3
+  # # #add north arrow (symbol 1 or 3) ###### TOP RIGHT ######
+  ggsn::north(data = NULL,
+              x.min = 165.448, x.max = 165.468, y.min = -21.523, y.max = -21.529,
+              symbol = 1, scale = 2.8) +
+
+  #add scalebar
+  ggsn::scalebar(data = NULL, dist = dist, transform = TRUE, model = "WGS84", dist_unit = "km", height = 0.3,
+                 x.min = 165.219, x.max = 165.269, y.min = -21.633, y.max = -21.640,
+                 st.dist = 0.5, st.color = "white", box.color = "black", border.size = 0.5, box.fill = c("white", "black"), st.size = 3.4) +
+
+
 
 
 

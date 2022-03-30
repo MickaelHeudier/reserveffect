@@ -45,4 +45,5 @@ Imports:
     patchwork,
     vegan,
     cowplot,
-    cartography
+    cartography,
+    permuco
