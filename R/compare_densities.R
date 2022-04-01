@@ -1317,7 +1317,7 @@ boxplot_density_allen_coral_mpa_with_megafauna_image_log <- function(df, species
 
   p = ggpubr::ggpar(p, orientation = "horizontal")
   #legend
-  p = ggpubr::ggpar(p,legend = "right", legend.title = "MPA status", font.legend = c(10, "plain", "black"))
+  p = ggpubr::ggpar(p,legend = "right", legend.title = "", font.legend = c(10, "plain", "black"))
   #Title
   p = ggpubr::ggpar(p,
         title = species_title,
@@ -1351,7 +1351,7 @@ boxplot_density_allen_coral_mpa_with_megafauna_image_log <- function(df, species
                          legend.title = ggplot2::element_text(size = 13))
 
   #rename legend + color
-  p = p + ggplot2::scale_fill_manual(labels = c("MPA", "No MPA"), values = c("yellow", "#13315C"))
+  p = p + ggplot2::scale_fill_manual(labels = c("MPA", "No MPA"), values = c("yellow", "skyblue3"))
 
 
 

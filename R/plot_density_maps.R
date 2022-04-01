@@ -1228,7 +1228,7 @@ map_nbr_survey_with_sightings_per_pixels <- function(maplatlonproj, polytracks, 
                    legend.text = ggplot2::element_text(size = 11),
                    legend.title = ggplot2::element_text(size = 13)) +
     ggplot2::scale_color_gradient(low = "bisque1", high = "red3", na.value = NA,
-                                  name = "Observation \nfrequency") +
+                                  name = "Occurrence \nfrequency") +
 
     # #add megafauna image
     ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
