@@ -12,8 +12,8 @@ dir.create("data")
 
 dir.create("data/telemetry")
 
-dir.create("outputs/poe_on_effort")
-
+dir.create("ou
+tputs/poe_on_e ffort")
 #declare package dependancies
 # usethis::use_package("viridis")
 

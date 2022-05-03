@@ -49,8 +49,11 @@ videos = reserveffect::clean_video_info(videos)
 #Join video information to telemetry
 telemetry = reserveffect::join_video_info_telem(videos, telemetry)
 
+#Rdata
+load("telemetry_obs.RData")
+
 #Clean duplicated obs from telemetry (takes about 20 minutes to process)
-telemetry_obs = reserveffect::clean_duplicated_obs_telemetry(telemetry, overlap, image_height)
+# telemetry_obs = reserveffect::clean_duplicated_obs_telemetry(telemetry, overlap, image_height)
 
 #Get list of Poe videos
 ls_poe_videos = reserveffect::list_poe_videos(videos)
@@ -335,11 +338,6 @@ reserveffect::map_obs_per_coral_poly_species_poe(maplatlon_sm_proj, coral_obs_pe
 reserveffect::map_obs_per_coral_poly_species_poe(maplatlon_sm_proj, coral_obs_per_date, "Eagle_ray")
 
 
-#Map species densities per coral polygon (all dates)
-#***need to add open sea polygon
-#*** make function
-
-
 ############################################ DENSITY COMPARISONS #############################################################
 
 #Make dataframe per grid cell centers (including empty cell centers) of observations, track length and densities per date and per species for POe
@@ -377,28 +375,14 @@ reserveffect::barplot_density_mpa(df_all_species_coral_mpa, "Round_ray")
 reserveffect::barplot_density_mpa(df_all_species_coral_mpa, "Eagle_ray")
 
 
-###barplots per date
+#frequency histogram of habitat
+reserveffect::frequency_histogram_habitat_in_out_mpa(df_all_species_allen_coral_mpa)
 
-#habitat : not used
-reserveffect::barplot_density_coral_per_date(df_all_species_coral, "l4_attrib", "Dugong_certain")
-reserveffect::barplot_density_coral_per_date(df_all_species_coral, "l4_attrib", "Turtle")
-reserveffect::barplot_density_coral_per_date(df_all_species_coral, "l4_attrib", "Shark")
-reserveffect::barplot_density_coral_per_date(df_all_species_coral, "l4_attrib", "Round_ray")
-reserveffect::barplot_density_coral_per_date(df_all_species_coral, "l4_attrib", "Eagle_ray")
+#frequency histogram of habitat without deepsea
+reserveffect::frequency_histogram_habitat_in_out_mpa_without_deepsea(df_all_species_allen_coral_mpa)
 
-# #habitat with data Allen : not used
-# reserveffect::barplot_density_allen_coral_per_date(df_all_species_allen_coral, "Dugong_certain")
-# reserveffect::barplot_density_allen_coral_per_date(df_all_species_allen_coral, "Turtle")
-# reserveffect::barplot_density_allen_coral_per_date(df_all_species_allen_coral, "Shark")
-# reserveffect::barplot_density_allen_coral_per_date(df_all_species_allen_coral, "Round_ray")
-# reserveffect::barplot_density_allen_coral_per_date(df_all_species_allen_coral, "Eagle_ray")
-
-#mpa : not used
-reserveffect::barplot_density_mpa_per_date(df_all_species_coral_mpa, "Dugong_certain")
-reserveffect::barplot_density_mpa_per_date(df_all_species_coral_mpa, "Turtle")
-reserveffect::barplot_density_mpa_per_date(df_all_species_coral_mpa, "Shark")
-reserveffect::barplot_density_mpa_per_date(df_all_species_coral_mpa, "Round_ray")
-reserveffect::barplot_density_mpa_per_date(df_all_species_coral_mpa, "Eagle_ray")
+#coverage percentage of habitat in / out mpa
+reserveffect::coverage_percentage_habitat_in_out_mpa_without_deepsea(df_all_species_allen_coral_mpa)
 
 
 ###compare densities in/out mpa
@@ -454,49 +438,8 @@ compare_densities_between_combined_habitats_mpa_status(df_all_species_coral_mpa,
 compare_densities_between_combined_habitats_mpa_status(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
 compare_densities_between_combined_habitats_mpa_status(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib")
 
-# ###compare densities between habitat types and in/out mpa with data Allen : not used
-# compare_densities_between_combined_allen_habitats_mpa_status(df_all_species_coral_mpa, "Dugong_certain")
-# compare_densities_between_combined_allen_habitats_mpa_status(df_all_species_coral_mpa, "Turtle")
-# compare_densities_between_combined_allen_habitats_mpa_status(df_all_species_coral_mpa, "Shark")
-# compare_densities_between_combined_allen_habitats_mpa_status(df_all_species_coral_mpa, "Round_ray")
-# compare_densities_between_combined_allen_habitats_mpa_status(df_all_species_coral_mpa, "Eagle_ray")
 
 ###Boxplots (0s removed)
-
-#mpa : not used
-reserveffect::boxplot_density_mpa(df_all_species_coral_mpa, "Dugong_certain")
-reserveffect::boxplot_density_mpa(df_all_species_coral_mpa, "Turtle")
-reserveffect::boxplot_density_mpa(df_all_species_coral_mpa, "Shark")
-reserveffect::boxplot_density_mpa(df_all_species_coral_mpa, "Round_ray")
-reserveffect::boxplot_density_mpa(df_all_species_coral_mpa, "Eagle_ray")
-
-#habitat : not used
-reserveffect::boxplot_density_coral(df_all_species_coral_mpa, "Dugong_certain", "l4_attrib")
-reserveffect::boxplot_density_coral(df_all_species_coral_mpa, "Turtle", "l4_attrib")
-reserveffect::boxplot_density_coral(df_all_species_coral_mpa, "Shark", "l4_attrib")
-reserveffect::boxplot_density_coral(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
-reserveffect::boxplot_density_coral(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib")
-
-#habitat with data Allen : not used
-reserveffect::boxplot_density_allen_coral(df_all_species_allen_coral_mpa, "Dugong_certain")
-reserveffect::boxplot_density_allen_coral(df_all_species_allen_coral_mpa, "Turtle")
-reserveffect::boxplot_density_allen_coral(df_all_species_allen_coral_mpa, "Shark")
-reserveffect::boxplot_density_allen_coral(df_all_species_allen_coral_mpa, "Round_ray")
-reserveffect::boxplot_density_allen_coral(df_all_species_allen_coral_mpa, "Eagle_ray")
-
-#habitat and mpa : not used
-reserveffect::boxplot_density_coral_mpa(df_all_species_coral_mpa, "Dugong_certain", "l4_attrib")
-reserveffect::boxplot_density_coral_mpa(df_all_species_coral_mpa, "Turtle", "l4_attrib")
-reserveffect::boxplot_density_coral_mpa(df_all_species_coral_mpa, "Shark", "l4_attrib")
-reserveffect::boxplot_density_coral_mpa(df_all_species_coral_mpa, "Round_ray", "l4_attrib")
-reserveffect::boxplot_density_coral_mpa(df_all_species_coral_mpa, "Eagle_ray", "l4_attrib")
-
-#habitat and mpa with data Allen : not used
-reserveffect::boxplot_density_allen_coral_mpa(df_all_species_allen_coral_mpa, "Dugong_certain")
-reserveffect::boxplot_density_allen_coral_mpa(df_all_species_allen_coral_mpa, "Turtle")
-reserveffect::boxplot_density_allen_coral_mpa(df_all_species_allen_coral_mpa, "Shark")
-reserveffect::boxplot_density_allen_coral_mpa(df_all_species_allen_coral_mpa, "Round_ray")
-reserveffect::boxplot_density_allen_coral_mpa(df_all_species_allen_coral_mpa, "Eagle_ray")
 
 #habitat and mpa with data Allen and megafauna image LOG  : used : Figure 4
 reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_species_allen_coral_mpa, "Dugong_certain", img_Dugong_certain)
@@ -504,27 +447,6 @@ reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_sp
 reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_species_allen_coral_mpa, "Shark", img_Shark)
 reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_species_allen_coral_mpa, "Round_ray", img_Round_ray)
 reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_species_allen_coral_mpa, "Eagle_ray", img_Eagle_ray)
-
-#habitat and mpa with data Allen and megafauna image no LOG : not used
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image(df_all_species_allen_coral_mpa, "Dugong_certain", img_Dugong_certain)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image(df_all_species_allen_coral_mpa, "Turtle", img_Turtle)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image(df_all_species_allen_coral_mpa, "Shark", img_Shark)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image(df_all_species_allen_coral_mpa, "Round_ray", img_Round_ray)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image(df_all_species_allen_coral_mpa, "Eagle_ray", img_Eagle_ray)
-
-#habitat and mpa with data Allen and megafauna image with zero + LOG : not used
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero_log(df_all_species_allen_coral_mpa, "Dugong_certain", img_Dugong_certain)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero_log(df_all_species_allen_coral_mpa, "Turtle", img_Turtle)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero_log(df_all_species_allen_coral_mpa, "Shark", img_Shark)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero_log(df_all_species_allen_coral_mpa, "Round_ray", img_Round_ray)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero_log(df_all_species_allen_coral_mpa, "Eagle_ray", img_Eagle_ray)
-
-#habitat and mpa with data Allen and megafauna image with zero no LOG : not used
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero(df_all_species_allen_coral_mpa, "Dugong_certain", img_Dugong_certain)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero(df_all_species_allen_coral_mpa, "Turtle", img_Turtle)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero(df_all_species_allen_coral_mpa, "Shark", img_Shark)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero(df_all_species_allen_coral_mpa, "Round_ray", img_Round_ray)
-reserveffect::boxplot_density_allen_coral_mpa_with_megafauna_image_zero(df_all_species_allen_coral_mpa, "Eagle_ray", img_Eagle_ray)
 
 
 ### Make two-way anova for density per mpa status and coral habitat and barplot of the result : not used
@@ -552,21 +474,6 @@ make_twoway_test_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Shark"
 make_twoway_test_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Round_ray")
 make_twoway_test_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Eagle_ray")
 
-# Barplot with all species : Make two-way non parametric test (scheirerRayHare test) for density per mpa status and Allen coral habitat and barplot of the result : not used
-# https://rcompanion.org/handbook/F_14.html
-#mpa + class2 : not used
-make_twoway_test_barplot_allen_coral_mpa_with_all_species_mpa_class2(df_all_species_allen_coral_mpa, "Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
-
-#class2 + mpa : not used
-make_twoway_test_barplot_allen_coral_mpa_with_all_species_class2_mpa(df_all_species_allen_coral_mpa, "Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
-
-#mpa + class2 without zero : not used
-make_twoway_test_barplot_allen_coral_mpa_with_all_species_mpa_class2_without_zero(df_all_species_allen_coral_mpa, "Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
-
-#class2 + mpa : not used
-make_twoway_test_barplot_allen_coral_mpa_with_all_species_class2_mpa_without_zero(df_all_species_allen_coral_mpa, "Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
-
-
 
 # Make permanova for density per mpa status and coral habitat and barplot of the result with data Allen : not used
 make_permanova_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Dugong_certain")
@@ -576,29 +483,7 @@ make_permanova_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Round_ra
 make_permanova_barplot_allen_coral_mpa(df_all_species_allen_coral_mpa, "Eagle_ray")
 
 #Barplot with all species : Permanova
-#mpa + habitat without zero : not used
-permanova_barplot_allen_coral_mpa_with_all_species_mpa_habitat_without_zero(df_all_species_allen_coral_mpa, "Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
 
-#mpa + habitat without zero : not used
-permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa_without_zero(df_all_species_allen_coral_mpa, "Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
-
-#mpa + habitat : not used
-permanova_barplot_allen_coral_mpa_with_all_species_mpa_habitat(df_all_species_allen_coral_mpa, "Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
-
-#habitat + mpa : used : Figure 3.F
+#Permanova habitat + mpa on densities : used : Figure 3.F
 permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa(df_all_species_allen_coral_mpa, "Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
 
-
-#test LM perm : not used
-lmperm_test_habitat_mpa(df_all_species_allen_coral_mpa, "Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
-
-
-
-
-##*** test other effects (month? confinement? tide?) on densities
-##*** account for differences in surface of polygons?
-
-##*** need to correct densities
-##*** how to deal with unregular survey frequency? (more frequent surveys in november)
-
-#Kruskal-Wallis
