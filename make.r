@@ -374,6 +374,10 @@ reserveffect::barplot_density_mpa(df_all_species_coral_mpa, "Shark")
 reserveffect::barplot_density_mpa(df_all_species_coral_mpa, "Round_ray")
 reserveffect::barplot_density_mpa(df_all_species_coral_mpa, "Eagle_ray")
 
+###compare densities in/out mpa
+
+#Test hyp that median densities in mpa and outside mpa are different : not used
+reserveffect::compare
 
 #frequency histogram of habitat
 reserveffect::frequency_histogram_habitat_in_out_mpa(df_all_species_allen_coral_mpa)
@@ -384,11 +388,7 @@ reserveffect::frequency_histogram_habitat_in_out_mpa_without_deepsea(df_all_spec
 #coverage percentage of habitat in / out mpa
 reserveffect::coverage_percentage_habitat_in_out_mpa_without_deepsea(df_all_species_allen_coral_mpa)
 
-
-###compare densities in/out mpa
-
-#Test hyp that median densities in mpa and outside mpa are different : not used
-reserveffect::compare_densities_in_out_mpa(df_all_species_coral_mpa, "Dugong_certain")
+_densities_in_out_mpa(df_all_species_coral_mpa, "Dugong_certain")
 reserveffect::compare_densities_in_out_mpa(df_all_species_coral_mpa, "Turtle")
 reserveffect::compare_densities_in_out_mpa(df_all_species_coral_mpa, "Shark")
 reserveffect::compare_densities_in_out_mpa(df_all_species_coral_mpa, "Round_ray")
