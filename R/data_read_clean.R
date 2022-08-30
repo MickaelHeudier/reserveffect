@@ -818,7 +818,7 @@ select_telemetry_in_buffer <- function(telem_sp, buf){
 }
 
 
-#' Read megafauna image in png format
+#' Read megafauna image in png format (original black silhouette)
 #'
 #' @param species
 #'
@@ -832,4 +832,22 @@ read_megafauna_image <- function(species){
 
   return(img)
 
+}
+
+
+
+#' Read megafauna image in png format (converted grey silhouette)
+#'
+#' @param species
+#'
+#' @return
+#' @export
+#'
+
+read_megafauna_image_grey <- function(species){
+  
+  img = png::readPNG(paste0(here::here("data/images"),"/", species, "_grey.png"))
+  
+  return(img)
+  
 }

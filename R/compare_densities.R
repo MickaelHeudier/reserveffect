@@ -359,61 +359,14 @@ intersect_df_mpa_allen_poly <- function(df, mpa_poly){
                       "OWN_TYPE",   "MANG_AUTH",  "MANG_PLAN",  "VERIF",  "METADATAID", "SUB_LOC",  "PARENT_ISO", "ISO3",
                       "SUPP_INFO",  "CONS_OBJ",  "STATUS",  "STATUS_YR","GOV_TYPE" )) %>%
     dplyr::mutate(NAME = forcats::as_factor(NAME)) %>%
-    dplyr::mutate(mpa_status = forcats::fct_recode(NAME, mpa = "PoÃ©")) %>%
-    #add new column base on mpa status and coral habitat
-    dplyr::mutate(mpa_status_l4_attrib = paste0(mpa_status, "_", l4_attrib)) -> res
+    dplyr::mutate(mpa_status = forcats::fct_recode(NAME, mpa = "PoÃ©"))  -> res
 
   return(res)
 
 }
 
 
-#' Barplot of mean density per coral habitat
-#'
-#' @param df
-#' @param coral_attrib
-#' @param species
-#'
-#' @return
-#' @export
-#'
 
-barplot_density_coral <- function(df, coral_attrib, species){
-
-  #mean density per coral hab for given species
-  df %>%
-    dplyr::mutate(density = get(paste0("density_", species))) %>%
-    dplyr::mutate(coral_hab = get(paste(coral_attrib))) %>%
-    dplyr::select(c(density, coral_hab)) %>%
-    dplyr::group_by(coral_hab) %>%
-    dplyr::summarize(mean = mean(density, na.rm=T),
-                     sd = sd(density, na.rm=T),
-                     se = sd / sqrt(length(density))) -> new
-
-  print(new)
-
-  # convert back to spatial object for plotting
-  new = sf::as_Spatial(new)
-
-  # make dataframe for plotting
-  new = data.frame(mean_dens = new$mean,
-                   sd_dens = new$sd,
-                   se_dens = new$se,
-                   coral_hab = new$coral_hab)
-
-  # plot
-  p = ggplot2::ggplot(new, ggplot2::aes(x = reorder(coral_hab, mean_dens), y = mean_dens)) +
-    ggplot2::geom_col() +
-    ggplot2::geom_errorbar(ggplot2::aes(x = reorder(coral_hab, mean_dens), ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, colour="orange", alpha=0.9, size=1.3) +
-    ggplot2::coord_flip() +
-    ggplot2::labs(title=paste("Density per coral habitat for", species)) +
-    ggplot2::xlab("") +
-    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
-                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1))
-
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/barplot_density_coral_", coral_attrib, "_", species, ".png")), p, width = 7, height = 5)
-
-}
 
 
 #' Barplot of mean density per coral habitat with data Allen
@@ -437,8 +390,6 @@ barplot_density_allen_coral <- function(df, species){
                      sd = sd(density, na.rm=T),
                      se = sd / sqrt(length(density))) -> new
 
-  print(new)
-
   # convert back to spatial object for plotting
   new = sf::as_Spatial(new)
 
@@ -446,27 +397,37 @@ barplot_density_allen_coral <- function(df, species){
   new = data.frame(mean_dens = new$mean,
                    sd_dens = new$sd,
                    se_dens = new$se,
-                   coral_hab = new$coral_hab)
+                   coral_hab = as.factor(new$coral_hab))
+
+  #rename deep_Sea
+  levels(new$coral_hab) <- c("Coral/Algae", "Open Sea", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass")
 
   # plot
-  p = ggplot2::ggplot(new, ggplot2::aes(x = reorder(coral_hab, mean_dens), y = mean_dens)) +
+  p = ggplot2::ggplot(new, ggplot2::aes(x = coral_hab, y = mean_dens)) +
     ggplot2::geom_col() +
-    ggplot2::geom_errorbar(ggplot2::aes(x = reorder(coral_hab, mean_dens), ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, colour="orange", alpha=0.9, size=1.3) +
-    ggplot2::coord_flip() +
-    ggplot2::labs(title=paste("Density per coral habitat for", species)) +
+    ggplot2::geom_errorbar(ggplot2::aes(x = coral_hab, ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, colour="orange", alpha=0.9, size=1.3) +
     ggplot2::xlab("") +
+    ggplot2::ylab("Density") +
     ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
-                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1))
+                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1, size =12),
+                   axis.title.y = ggplot2::element_text(size = 15),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
+                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"))
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/barplot_density_allen_coral_", species, ".png")), p, width = 7, height = 5)
+
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_allen_coral_", species, ".png")), p, width = 7, height = 5)
 
 }
+
+
+
+
 
 
 #' Barplot of mean density per mpa status (in/out mpa)
 #'
 #' @param df
-#' @param coral_attrib
 #' @param species
 #'
 #' @return
@@ -483,8 +444,6 @@ barplot_density_mpa <- function(df, species){
                      sd = sd(density, na.rm=T),
                      se = sd / sqrt(length(density))) -> new
 
-  print(new)
-
   # convert back to spatial object for plotting
   new = sf::as_Spatial(new)
 
@@ -492,51 +451,54 @@ barplot_density_mpa <- function(df, species){
   new = data.frame(mean_dens = new$mean,
                    sd_dens = new$sd,
                    se_dens = new$se,
-                   mpa_status = new$mpa_status)
+                   mpa_status = as.factor(new$mpa_status))
+
+  levels(new$mpa_status) <- c("Inside MPA", "Outside MPA")
+
 
   # plot
-  p = ggplot2::ggplot(new, ggplot2::aes(x = reorder(mpa_status, mean_dens), y = mean_dens)) +
+  p = ggplot2::ggplot(new, ggplot2::aes(x = mpa_status, y = mean_dens)) +
     ggplot2::geom_col() +
-    ggplot2::geom_errorbar(ggplot2::aes(x = reorder(mpa_status, mean_dens), ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, colour="orange", alpha=0.9, size=1.3) +
-    ggplot2::coord_flip() +
-    ggplot2::labs(title=paste("Density per mpa status for", species)) +
+    ggplot2::geom_errorbar(ggplot2::aes(x = mpa_status, ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, colour="orange", alpha=0.9, size=1.3) +
     ggplot2::xlab("") +
+    ggplot2::ylab("Density") +
     ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
-                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1))
+                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1, size =12),
+                   axis.title.y = ggplot2::element_text(size = 15),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
+                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"))
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/barplot_density_mpa_", species, ".png")), p, width = 7, height = 5)
+
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_mpa_", species, ".png")), p, width = 7, height = 5)
 
 }
 
 
 
 
-
-#' Barplot of mean density per coral habitat and mpa status
+#' Barplot of mean density per coral habitat with data Allen with image
 #'
 #' @param df
-#' @param coral_attrib
 #' @param species
+#' @param img
 #'
 #' @return
 #' @export
 #'
 
-barplot_density_coral_mpa <- function(df, coral_attrib, species){
+barplot_density_allen_coral_image <- function(df, species, img){
 
-  #mean density per mpa status and coral hab for given species
+  #mean density per coral hab for given species
   df %>%
     dplyr::mutate(density = get(paste0("density_", species))) %>%
-    dplyr::mutate(coral_hab = get(paste0("mpa_status_", coral_attrib))) %>%
+    dplyr::mutate(coral_hab = get(paste("class"))) %>%
     dplyr::select(c(density, coral_hab)) %>%
     dplyr::group_by(coral_hab) %>%
     dplyr::summarize(mean = mean(density, na.rm=T),
                      sd = sd(density, na.rm=T),
                      se = sd / sqrt(length(density))) -> new
 
-  print(new)
-
-####****FINISH
   # convert back to spatial object for plotting
   new = sf::as_Spatial(new)
 
@@ -544,25 +506,332 @@ barplot_density_coral_mpa <- function(df, coral_attrib, species){
   new = data.frame(mean_dens = new$mean,
                    sd_dens = new$sd,
                    se_dens = new$se,
-                   coral_hab = new$coral_hab)
+                   coral_hab = as.factor(new$coral_hab))
 
-  #reorder levels
-  sizes <- factor(c("small", "large", "large", "small", "medium"),
-                  levels = c("small", "medium", "large"))
+  #rename deep_Sea
+  levels(new$coral_hab) <- c("Coral/Algae", "Open Sea", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass")
+
+  # parameters for image placement
+  if (species == "Dugong_certain"){
+    ylim = 0.016
+    a = 5
+    b = 7.8
+    c = 0.010
+    d = 0.018
+    species_title <- "Dugong"
+  }
+  if (species == "Turtle"){
+    ylim = 0.013
+    a = 5.4
+    b = 8.2
+    c = 0.010
+    d = 0.014
+    species_title <- "Sea turtle"
+  }
+  if (species == "Shark"){
+    ylim = 0.005
+    a = 5
+    b = 7.8
+    c = 0.0035
+    d = 0.0055
+    species_title <- "Shark"
+  }
+  if (species == "Round_ray"){
+    ylim = 0.012
+    a = 5.4
+    b = 8.3
+    c = 0.0085
+    d = 0.0125
+    species_title <- "Dasyatidae"
+  }
+  if (species == "Eagle_ray"){
+    ylim = 0.006
+    a = 5.4
+    b = 8
+    c = 0.004
+    d = 0.006
+    species_title <- "Myliobatidae"
+  }
+
 
   # plot
   p = ggplot2::ggplot(new, ggplot2::aes(x = coral_hab, y = mean_dens)) +
     ggplot2::geom_col() +
     ggplot2::geom_errorbar(ggplot2::aes(x = coral_hab, ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, colour="orange", alpha=0.9, size=1.3) +
-    ggplot2::coord_flip() +
-    ggplot2::labs(title=paste("Density per coral habitat for", species)) +
-    ggplot2::xlab("") +
+    ggplot2::xlab("Habitat class") +
+    ggplot2::ylim(c(0, ylim)) +
+    ggplot2::ylab("Density") +
+    ggplot2::ggtitle(species_title) +
     ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
-                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1))
+                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1, size =12),
+                   axis.title.y = ggplot2::element_text(size = 15),
+                   axis.title.x = ggplot2::element_text(size = 15),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
+                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid', colour = "white")) +
+   #add megafaune image
+   ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/barplot_density_coral_", coral_attrib, "_mpa_", species, ".png")), p, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_allen_coral_", species, "_image.png")), p, width = 7, height = 5)
 
 }
+
+
+
+
+
+
+
+#' Barplot of mean density per mpa status (in/out mpa) with image
+#'
+#' @param df
+#' @param species
+#' @param img
+#'
+#' @return
+#' @export
+#'
+
+barplot_density_mpa_image <- function(df, species, img){
+
+  #mean density and se for given species
+  df %>%
+    dplyr::mutate(density = get(paste0("density_", species))) %>%
+    dplyr::group_by(mpa_status) %>%
+    dplyr::summarize(mean = mean(density, na.rm=T),
+                     sd = sd(density, na.rm=T),
+                     se = sd / sqrt(length(density))) -> new
+
+  # convert back to spatial object for plotting
+  new = sf::as_Spatial(new)
+
+  # make dataframe for plotting
+  new = data.frame(mean_dens = new$mean,
+                   sd_dens = new$sd,
+                   se_dens = new$se,
+                   mpa_status = as.factor(new$mpa_status))
+
+  levels(new$mpa_status) <- c("Inside MPA", "Outside MPA")
+
+  # parameters for image placement
+  if (species == "Dugong_certain"){
+    a = 1.8
+    b = 2.8
+    c = 0.0065
+    d = 0.0115
+    species_title <- "Dugong"
+  }
+  if (species == "Turtle"){
+    a = 1.8
+    b = 2.8
+    c = 0.0055
+    d = 0.0085
+    species_title <- "Sea turtle" 
+  }
+  if (species == "Shark"){
+    a = 1.8
+    b = 2.8
+    c = 0.002
+    d = 0.0035
+    species_title <- "Shark"
+  }
+  if (species == "Round_ray"){
+    a = 1.8
+    b = 2.8
+    c = 0.003
+    d = 0.005
+    species_title <- "Dasyatidae" 
+  }
+  if (species == "Eagle_ray"){
+    a = 1.8
+    b = 2.8
+    c = 0.002
+    d = 0.0035
+    species_title <- "Myliobatidae" 
+  }
+
+  # plot
+  p = ggplot2::ggplot(new, ggplot2::aes(x = mpa_status, y = mean_dens)) +
+    ggplot2::geom_col() +
+    ggplot2::geom_errorbar(ggplot2::aes(x = mpa_status, ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, colour="orange", alpha=0.9, size=1.3) +
+    ggplot2::xlab("") +
+    ggplot2::ylab("Density") +
+    ggplot2::ggtitle(species_title) +
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                   axis.text.x = ggplot2::element_text(size =12),
+                   axis.title.y = ggplot2::element_text(size = 15),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
+                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white")) +
+  #add megafaune image
+  ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
+
+
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_mpa_", species, "_image.png")), p, width = 7, height = 5)
+
+}
+
+
+
+#' Barplot of mean density per coral habitat and mpa status
+#'
+#' @param df
+#' @param species
+#'
+#' @return
+#' @export
+#'
+
+barplot_density_allen_coral_mpa <- function(df, species){
+
+  #mean density per mpa status and coral hab for given species
+  df %>%
+    dplyr::mutate(density = get(paste0("density_", species))) %>%
+    dplyr::mutate(coral_hab = get(paste("class"))) %>%
+    dplyr::group_by(coral_hab, mpa_status) %>%
+    dplyr::summarize(mean = mean(density, na.rm=T),
+                     sd = sd(density, na.rm=T),
+                     se = sd / sqrt(length(density))) -> new
+
+  # convert back to spatial object for plotting
+  new = sf::as_Spatial(new)
+
+  # make dataframe for plotting
+  new = data.frame(mean_dens = new$mean,
+                   sd_dens = new$sd,
+                   se_dens = new$se,
+                   coral_hab = as.factor(new$coral_hab),
+                   mpa_status = as.factor(new$mpa_status))
+
+  #rename deep_Sea
+  levels(new$coral_hab) <- c("Coral/Algae", "Open Sea", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass")
+  levels(new$mpa_status) <- c("Inside MPA", "Outside MPA")
+
+  # plot
+  p = ggplot2::ggplot(new, ggplot2::aes(x = coral_hab, y = mean_dens, fill = mpa_status)) +
+    ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge()) +
+    ggplot2::geom_errorbar(ggplot2::aes(x = coral_hab, ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, size=1.3,
+                           position = ggplot2::position_dodge(0.9), colour = "orange") +
+    ggplot2::scale_fill_manual(values = c("Outside MPA" = "grey20", "Inside MPA" = "yellow")) +
+    ggplot2::xlab("") +
+    ggplot2::ylab("Density") +
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1, size =12),
+                   axis.title.y = ggplot2::element_text(size = 15),
+                   legend.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 12),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
+                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"))
+
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_allen_coral_mpa_", species, ".png")), p, width = 7, height = 5)
+
+}
+
+
+
+
+
+
+#' Barplot of mean density per coral habitat and mpa status with image
+#'
+#' @param df
+#' @param species
+#' @param img
+#'
+#' @return
+#' @export
+#'
+
+barplot_density_allen_coral_mpa_image <- function(df, species, img){
+
+  #mean density per mpa status and coral hab for given species
+  df %>%
+    dplyr::mutate(density = get(paste0("density_", species))) %>%
+    dplyr::mutate(coral_hab = get(paste("class"))) %>%
+    dplyr::group_by(coral_hab, mpa_status) %>%
+    dplyr::summarize(mean = mean(density, na.rm=T),
+                     sd = sd(density, na.rm=T),
+                     se = sd / sqrt(length(density))) -> new
+
+  # convert back to spatial object for plotting
+  new = sf::as_Spatial(new)
+
+  # make dataframe for plotting
+  new = data.frame(mean_dens = new$mean,
+                   sd_dens = new$sd,
+                   se_dens = new$se,
+                   coral_hab = as.factor(new$coral_hab),
+                   mpa_status = as.factor(new$mpa_status))
+
+  #rename deep_Sea
+  levels(new$coral_hab) <- c("Coral/Algae", "Open Sea", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass")
+  levels(new$mpa_status) <- c("Inside MPA", "Outside MPA")
+
+  # parameters for image placement
+  if (species == "Dugong_certain"){
+    a = 5.3
+    b = 8
+    c = 0.04
+    d = 0.067
+    species_title <- "Dugong" 
+  }
+  if (species == "Turtle"){
+    a = 0.5
+    b = 2
+    c = 0.014
+    d = 0.021
+    species_title <- "Sea turtle" 
+  }
+  if (species == "Shark"){
+    a = 5.3
+    b = 8
+    c = 0.006
+    d = 0.0084
+    species_title <- "Shark" 
+  }
+  if (species == "Round_ray"){
+    a = 5.3
+    b = 8
+    c = 0.011
+    d = 0.015
+    species_title <- "Dasyatidae" 
+  }
+  if (species == "Eagle_ray"){
+    a = 5.3
+    b = 8
+    c = 0.0085
+    d = 0.012
+    species_title <- "Myliobatidae" 
+  }
+
+  # plot
+  p = ggplot2::ggplot(new, ggplot2::aes(x = coral_hab, y = mean_dens, fill = mpa_status)) +
+    ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge()) +
+    ggplot2::geom_errorbar(ggplot2::aes(x = coral_hab, ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, size=1.3,
+                           position = ggplot2::position_dodge(0.9), colour = "orange") +
+    ggplot2::scale_fill_manual(values = c("Outside MPA" = "grey20", "Inside MPA" = "yellow")) +
+    ggplot2::xlab("Habitat class") +
+    ggplot2::ylab("Density") +
+    ggplot2::ggtitle(species_title) +
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1, size =12),
+                   axis.title.x = ggplot2::element_text(size = 15),
+                   axis.title.y = ggplot2::element_text(size = 15),
+                   legend.title = ggplot2::element_blank(),
+                   legend.text = ggplot2::element_text(size = 12),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
+                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white")) +
+  #add megafaune image
+  ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
+
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_allen_coral_mpa_", species, "_image.png")), p, width = 7, height = 5)
+
+}
+
+
+
 
 
 #' Test hyp that median densities in mpa and outside mpa are different
@@ -581,10 +850,10 @@ compare_densities_in_out_mpa <- function(df, species){
   df %>%
     dplyr::mutate(density = get(paste0("density_", species))) -> df
 
-  cat("--------------------------")
+  cat("--------------------------\n")
   cat(species)
 
-  wilcox.test(density ~ mpa_status, data = df, exact = FALSE)
+  print(wilcox.test(density ~ mpa_status, data = df, exact = FALSE))
 
   print("if p-value of the test is less than the significance level alpha = 0.05
   We can conclude that the median desnity in mpa is significantly different
@@ -610,10 +879,10 @@ compare_densities_in_out_mpa_greater <- function(df, species){
   df %>%
     dplyr::mutate(density = get(paste0("density_", species))) -> df
 
-  cat("--------------------------")
+  cat("--------------------------\n")
   cat(species)
 
-  wilcox.test(density ~ mpa_status, data = df,  exact = FALSE, alternative = "greater")
+  print(wilcox.test(density ~ mpa_status, data = df,  exact = FALSE, alternative = "greater"))
 
   print("if p-value of the test is less than the significance level alpha = 0.05
   We can conclude that the median desnity in mpa is significantly greater
@@ -671,10 +940,10 @@ compare_densities_between_allen_habitats <- function(df, species){
     dplyr::mutate(coral_class = get(paste0("class"))) %>%
     dplyr::mutate(coral_class = forcats::as_factor(coral_class)) -> df
 
-  cat("--------------------------")
+  cat("--------------------------\n")
   cat(species, "and", "class")
 
-  kruskal.test(density ~ coral_class, data = df)
+  print(kruskal.test(density ~ coral_class, data = df))
 
   print("if p-value of the test is less than the significance level alpha = 0.05
   We can conclude that desnities are significantly different between
@@ -735,7 +1004,7 @@ compare_densities_between_allen_habitats_pairwise <- function(df, species){
   cat("--------------------------")
   cat(species, "and", "class")
 
-  pairwise.wilcox.test(df$density, df$coral_class, p.adjust.method = "BH")
+  print(pairwise.wilcox.test(df$density, df$coral_class, p.adjust.method = "BH"))
 
   print("if p-value of a pairwise comparison is less than the significance level alpha = 0.05
   We can conclude that these levels are significantly different with a p-value of xxx")
@@ -1051,7 +1320,7 @@ boxplot_density_allen_coral_mpa_with_megafauna_image_log <- function(df, species
   # #graduations
   # p = p + ggplot2::scale_y_continuous(labels = scaleFUN)
 
-ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/boxplot_density_allen_coral_", "mpa_", species, "_with_megafauna_image_LOG", ".png")), p, width = 7, height = 5)
+ggplot2::ggsave(here::here(paste0("outputs/boxplot_density_allen_coral_", "mpa_", species, "_with_megafauna_image_LOG", ".png")), p, width = 7, height = 5)
 
 
 }
@@ -1151,7 +1420,7 @@ make_anova_barplot_coral_mpa <- function(df, species, coral_attrib){
             axis.title = ggplot2::element_text(size=14,face="bold"),
             plot.title = ggplot2::element_text(hjust = 0.5))
 
-    ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/anova_barplot_coral_", coral_attrib, "_mpa_", species, ".png")), p, width = 7, height = 5)
+    ggplot2::ggsave(here::here(paste0("outputs/anova_barplot_coral_", coral_attrib, "_mpa_", species, ".png")), p, width = 7, height = 5)
 
 
 }
@@ -1220,7 +1489,7 @@ make_twoway_test_barplot_coral_mpa <- function(df, species, coral_attrib){
                    plot.title = ggplot2::element_text(hjust = 0.5))+
     ggplot2::theme_bw()
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/twoway_test_barplot_coral_", coral_attrib, "_mpa_", species, ".png")), p, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/twoway_test_barplot_coral_", coral_attrib, "_mpa_", species, ".png")), p, width = 7, height = 5)
 
 }
 
@@ -1289,13 +1558,13 @@ make_twoway_test_barplot_allen_coral_mpa <- function(df, species){
                    panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
                    plot.title = ggplot2::element_text(hjust = 0.5))
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/twoway_test_barplot_allen_coral_mpa_", species, ".png")), p, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/twoway_test_barplot_allen_coral_mpa_", species, ".png")), p, width = 7, height = 5)
 
 }
 
 
 
-#' Make permanova for density per mpa status and coral habitat and barplot of the result with data Allen
+#' Make permanova for density per mpa status and coral habitat
 #'
 #' @param df
 #' @param species
@@ -1304,40 +1573,13 @@ make_twoway_test_barplot_allen_coral_mpa <- function(df, species){
 #' @export
 #'
 
-make_permanova_barplot_allen_coral_mpa <- function(df, species){
-
-
+make_permanova_allen_coral_mpa <- function(df, species){
 
   df %>%
     dplyr::mutate(allen_coral_hab = as.factor(get(paste("class")))) %>%
     # delete na
     dplyr::filter(!is.na(density_Dugong_certain), !is.na(density_Turtle), !is.na(density_Shark), !is.na(density_Round_ray), !is.na(density_Eagle_ray)) %>%
     as.data.frame() -> df
-
-
-  #remove cells corresponding to habitats that do not have both occurrences of mpa_status following
-  # table(df$mpa_status, df$coral_hab)
-  # channel, deep lagoon, main land, pass reef flat, pass
-  # df %>%
-  #   dplyr::filter(!allen_coral_hab %in% c("channel", "deep lagoon", "main land", "pass reef flat", "pass")) ->  df
-
-  # #eliminate outliers
-  # outliers <- boxplot(df$density[df$density > 0], plot=FALSE)$out
-  # df %>%
-  #   dplyr::filter(!density %in% outliers) ->  df
-
-  #convert log
-  # df  %>%
-  #   dplyr::mutate(log_density_Dugong_certain = log(density_Dugong_certain))
-
-  #convert data frame (help)
-  # df %>%
-  #   dplyr::select(id, density_Dugong_certain, density_Turtle, density_Shark, density_Round_ray, density_Eagle_ray) -> df_response
-
-
-  #convert data frame (help)
-  # df %>%
-  #   dplyr::select(id, density_Shark) -> df_response
 
   #density taxa
   if (species == "Dugong_certain") {
@@ -1356,79 +1598,46 @@ make_permanova_barplot_allen_coral_mpa <- function(df, species){
     density_taxa = df$density_Eagle_ray
   }
 
-  #convert data frame (help)
   df %>%
     dplyr::select(id, allen_coral_hab, mpa_status) -> df_env
 
   #permanova
   permanova <- vegan::adonis(density_taxa ~ allen_coral_hab * mpa_status, data = df_env, permutations = 999, method = "euclidean")
 
-  # #test
-  # permtest <- vegan::adonis2(dist(df_response) ~ allen_coral_hab*mpa_status, data= df_env, method = "euclidean",permutations = 999)
-
-
   print(permanova)
+
+  return(permanova)
 
 }
 
 
+
+
+
+
 #' Barplot with all species : Permanova habitat + mpa
 #'
+#' @param res1
+#' @param res2
+#' @param res3
+#' @param res4
+#' @param res5
 #' @param df
-#' @param species1
-#' @param species2
-#' @param species3
-#' @param species4
-#' @param species5
 #'
 #' @return
 #' @export
 #'
-#' @examples
-permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa <- function(df, species1, species2, species3, species4, species5){
 
-  df %>%
-    dplyr::mutate(density1 = get(paste0("density_", species1))) %>%
-    dplyr::mutate(density2 = get(paste0("density_", species2))) %>%
-    dplyr::mutate(density3 = get(paste0("density_", species3))) %>%
-    dplyr::mutate(density4 = get(paste0("density_", species4))) %>%
-    dplyr::mutate(density5 = get(paste0("density_", species5))) %>%
-    dplyr::mutate(Habitat = factor(class, levels = c("Coral/Algae", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass", "Deep_sea"))) -> df
-
-
-  #filter na
-  df %>%
-    dplyr::filter(!is.na(density1), !is.na(density2), !is.na(density3), !is.na(density4), !is.na(density5)) -> df
-
-  #convert data frame (help)
-  df %>%
-    dplyr::select(id, Habitat, mpa_status) -> df_env
-
-
-  # permanova
-  res1 = permanova <- vegan::adonis(df$density1 ~ Habitat * mpa_status, data = df_env, permutations = 999, method = "euclidean")
-  res2 = permanova <- vegan::adonis(df$density2 ~ Habitat * mpa_status, data = df_env, permutations = 999, method = "euclidean")
-  res3 = permanova <- vegan::adonis(df$density3 ~ Habitat * mpa_status, data = df_env, permutations = 999, method = "euclidean")
-  res4 = permanova <- vegan::adonis(df$density4 ~ Habitat * mpa_status, data = df_env, permutations = 999, method = "euclidean")
-  res5 = permanova <- vegan::adonis(df$density5 ~ Habitat * mpa_status, data = df_env, permutations = 999, method = "euclidean")
-
-  print(res1)
-  print(res2)
-  print(res3)
-  print(res4)
-  print(res5)
-
+make_permanova_barplot_allen_coral_mpa_with_all_species <- function(df, res1, res2, res3, res4, res5){
 
   # make new dataframe, table of results
-  new = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
-                   var = c("Habitat","Reserve","Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve", "Habitat", "Reserve", "Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve"),
+  new = data.frame(Species = c("Dugong_certain", "Dugong_certain", "Dugong_certain", "Turtle", "Turtle", "Turtle", "Shark", "Shark", "Shark", "Round_ray", "Round_ray", "Round_ray", "Eagle_ray", "Eagle_ray", "Eagle_ray"),
+                   var = rep(c("Habitat","Reserve","Habitat * Reserve"), 5),
                    effect =  c(res1$aov.tab$F.Model[1:3], res2$aov.tab$F.Model[1:3], res3$aov.tab$F.Model[1:3], res4$aov.tab$F.Model[1:3], res5$aov.tab$F.Model[1:3]),
                    pval = c(res1$aov.tab$`Pr(>F)`[1:3], res2$aov.tab$`Pr(>F)`[1:3], res3$aov.tab$`Pr(>F)`[1:3], res4$aov.tab$`Pr(>F)`[1:3], res5$aov.tab$`Pr(>F)`[1:3]),
                    signif = rep(NA, length(15)))
-  # signif = rep(NA, length(new$pval))
 
   #add significance symbol
-  # new$signif = ifelse(new$pval < 0.05, "*", "ns")
   for (i in 1:length(new$pval)){
     if(new$pval[i] > 0.05) {new$signif[i] <- "ns"}
     if(new$pval[i] <= 0.05 & new$pval[i] > 0.01) {new$signif[i] <- "*"}
@@ -1439,32 +1648,32 @@ permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa <- function(df, s
 
   #max effect for plotting
   maxeffect = max(new$effect)
+
   #effect variable
   effect = new$effect
-  # #max effect per effect
-  # effect_per_effect = (new$effect[species=="species1"&var=="Mpa"] + 2)
 
   #significance vector for plotting
   signif = new$signif
 
   #defined positions for correct order of bars
   positions <- c("Habitat","Reserve","Habitat * Reserve")
+
   #defined positions for correct order of species
   new$Species = factor(new$Species, levels = c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray"))
+
   #defined positions for correct order of var
   new$var = factor(new$var, levels = c("Habitat","Reserve","Habitat * Reserve"))
+
   #defined facet wrap names
-  new_sp_names = c("Dugong", "Sea turtle", "Shark", "Dasyat. ray", "Myliob. ray")
+  new_sp_names = c("Dugong", "Sea turtle", "Shark", "Dasyatidae", "Myliobatidae")
   names(new_sp_names) <- c("Dugong_certain", "Turtle", "Shark", "Round_ray", "Eagle_ray")
 
-  # # Create a grouped bar graph
+  # Create a grouped bar graph
   p = ggplot2::ggplot(new, ggplot2::aes(x = var, y = effect, fill = var)) +
     ggplot2::geom_col()+
-    # ggplot2::scale_fill_manual(values = c("yellow", "dodgerblue4", "skyblue3")) +
     ggplot2::scale_fill_manual(values = c("black","yellow", "darkgrey"), labels = c("Habitat","MPA", "Habitat * MPA")) +
     ggplot2::facet_wrap(~Species, nrow = 1, scales = "free_x", labeller = ggplot2::labeller(Species = new_sp_names)) +
     ggplot2::scale_x_discrete(limits = positions) +
-    # ggplot2::scale_y_continuous(position = "right") +
     ggplot2::ylab("F-score") +
     ggplot2::xlab("") +
     ggplot2::theme(axis.title.y = ggplot2::element_text(size = 17),
@@ -1482,19 +1691,125 @@ permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa <- function(df, s
                    strip.text.x = ggplot2::element_text(size = 15.5, color="black")) +
     ggplot2::geom_text(data = new, label = signif, nudge_y = 0.6, size = 6)
 
-  # make dataframe for plotting with all species
-  new2 = data.frame(Species = c(species1, species1, species1, species2, species2, species2, species3, species3, species3, species4, species4, species4, species5, species5, species5),
+  # make dataframe export
+  new2 = data.frame(Species = c("Dugong_certain", "Dugong_certain", "Dugong_certain", "Turtle", "Turtle", "Turtle", "Shark", "Shark", "Shark", "Round_ray", "Round_ray", "Round_ray", "Eagle_ray", "Eagle_ray", "Eagle_ray"),
                     Variables = c("Habitat","Reserve","Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve", "Habitat", "Reserve", "Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve", "Habitat","Reserve","Habitat * Reserve"),
                     Df =  c(res1$aov.tab$Df[1:3], res2$aov.tab$Df[1:3], res3$aov.tab$Df[1:3], res4$aov.tab$Df[1:3], res5$aov.tab$Df[1:3]),
                     SumsOfSqs = c(res1$aov.tab$SumsOfSqs[1:3], res2$aov.tab$SumsOfSqs[1:3], res3$aov.tab$SumsOfSqs[1:3], res4$aov.tab$SumsOfSqs[1:3], res5$aov.tab$SumsOfSqs[1:3]),
                     F_score =  c(res1$aov.tab$F.Model[1:3], res2$aov.tab$F.Model[1:3], res3$aov.tab$F.Model[1:3], res4$aov.tab$F.Model[1:3], res5$aov.tab$F.Model[1:3]),
                     "p.value" = c(res1$aov.tab$`Pr(>F)`[1:3], res2$aov.tab$`Pr(>F)`[1:3], res3$aov.tab$`Pr(>F)`[1:3], res4$aov.tab$`Pr(>F)`[1:3], res5$aov.tab$`Pr(>F)`[1:3]),
                     Signifiance = signif)
-  # #convert new2 to csv
-  write.csv2(new2, here::here("outputs","data_permanova.csv"),row.names = FALSE )
+
+  # convert new2 to csv
+  write.csv2(new2, here::here("outputs", "permanova_results.csv"), row.names = FALSE )
 
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa.png")), p, width = 7, height = 5)
+  ggplot2::ggsave(here::here("outputs", "permanova_barplot_allen_coral_mpa_with_all_species_habitat_mpa.png"), p, width = 7, height = 5)
 
 }
 
+
+
+
+
+#' Make pairwise comparisons for density per coral habitat
+#'
+#' @param df
+#' @param species
+#'
+#' @return
+#' @export
+#'
+
+make_pairwise_comparison_allen_coral <- function(df, species){
+
+  df %>%
+    dplyr::mutate(allen_coral_hab = as.factor(get(paste("class")))) %>%
+    # delete na
+    dplyr::filter(!is.na(density_Dugong_certain), !is.na(density_Turtle), !is.na(density_Shark), !is.na(density_Round_ray), !is.na(density_Eagle_ray)) %>%
+    as.data.frame() -> df
+
+  #density taxa
+  if (species == "Dugong_certain") {
+    density_taxa = df$density_Dugong_certain
+  }
+  if (species == "Turtle") {
+    density_taxa = df$density_Turtle
+  }
+  if (species == "Shark") {
+    density_taxa = df$density_Shark
+  }
+  if (species == "Round_ray") {
+    density_taxa = df$density_Round_ray
+  }
+  if (species == "Eagle_ray") {
+    density_taxa = df$density_Eagle_ray
+  }
+
+  df %>%
+    dplyr::select(id, allen_coral_hab) -> df_env
+
+  #need to load library for the function to work (installed from devtools::install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis"))
+  library(pairwiseAdonis)
+
+  #pairwise comp (need to replicate density_taxa column for the function to work)
+  comp <- pairwise.adonis2(cbind(density_taxa,density_taxa) ~ allen_coral_hab, data = df_env, permutations = 999, method = "euclidean")
+
+  print(comp)
+
+  return(comp)
+
+}
+
+
+
+
+
+#' Make pairwise comparisons for density per coral habitat and mpa
+#'
+#' @param df
+#' @param species
+#'
+#' @return
+#' @export
+#'
+
+make_pairwise_comparison_allen_coral_mpa <- function(df, species){
+
+  df %>%
+    dplyr::mutate(allen_coral_hab = as.factor(get(paste("class")))) %>%
+    # delete na
+    dplyr::filter(!is.na(density_Dugong_certain), !is.na(density_Turtle), !is.na(density_Shark), !is.na(density_Round_ray), !is.na(density_Eagle_ray)) %>%
+    as.data.frame() -> df
+
+  #density taxa
+  if (species == "Dugong_certain") {
+    density_taxa = df$density_Dugong_certain
+  }
+  if (species == "Turtle") {
+    density_taxa = df$density_Turtle
+  }
+  if (species == "Shark") {
+    density_taxa = df$density_Shark
+  }
+  if (species == "Round_ray") {
+    density_taxa = df$density_Round_ray
+  }
+  if (species == "Eagle_ray") {
+    density_taxa = df$density_Eagle_ray
+  }
+
+  df %>%
+    dplyr::select(id, allen_coral_hab, mpa_status) -> df_env
+
+  #need to load library for the function to work (installed from devtools::install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis"))
+  library(pairwiseAdonis)
+
+  #pairwise comp (need to replicate density_taxa column for the function to work)
+  comp <- pairwise.adonis2(cbind(density_taxa,density_taxa) ~ allen_coral_hab * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+
+  print(comp)
+
+  return(comp)
+
+}

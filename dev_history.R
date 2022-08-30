@@ -42,3 +42,7 @@ git reset --soft HEAD~1
 
 #install all dependencies
 remotes::install_deps(upgrade = "never")
+
+
+#install parwiseadonis package
+devtools::install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")

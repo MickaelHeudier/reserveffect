@@ -1,4 +1,4 @@
-#' Make map australia + nc : Figure 1 : heavy data
+#' Make map australia + nc : Figure 1
 #'
 #' @param lon1
 #' @param lon2
@@ -34,31 +34,25 @@
 # }
 
 
-#' Make map_poe
+#' Make New caledonia map with Poé location
 #'
 #' @return
 #' @export
 #'
-#' @examples
-map_poe <- function(){
+
+map_new_caledonia <- function(){
 
   # Use raster::getData("ISO3") to see codes
   new_caledonia <- raster::getData("GADM", country = "NCL", level = 1)
 
-
-  png("outputs/map_poe_raster.png", width = 480, height = 360) #to save + dev.off()
-
   # mar = c(bottom, left, top, right)
   par(mar = c(0.5,0.5,0.5,0.5), bg = "white")
   plot(new_caledonia, xlim = c(163.56,168.2), ylim = c(-22.62,-19.6), col ="#999999", border = "black", lwd = 1, cex = 2) ; box()
-  #add arrow
-  #can't change arrow size
-  # cartography::north(pos = "topright", col = "black")
+  #add arrow (can't change size)
+  cartography::north(pos = "bottomleft", col = "black")
   #add scalebar
-  # cartography::barscale(pos = c(167.79,-22.69), unit = "km", lwd = 3, cex = 1.5, style = "pretty")
   raster::scalebar(100, type='bar', below = "Km", lonlat = TRUE, lwd = 100)
   raster::text(165.88,-19.8, label = "NEW CALEDONIA", col = "black", cex = 1.8, font = 1)
-
   #add text
   raster::text(164.7,-22.1, label = "Poé", col = "black", cex = 1.8, font = 1)
 
@@ -456,6 +450,77 @@ map_allen_coral_poly_geomorphic_satellite <- function(maplatlon, cor, extent, lo
 }
 
 
+
+
+#' Make map of Allen coral geomorphology polygons with added open sea category
+#'
+#' @param cor
+#' @param maplatlon
+#' @param extent
+#' @param lon1
+#' @param lon2
+#' @param lat1
+#' @param lat2
+#' @param pa
+#'
+#' @return
+#' @export
+#'
+
+map_allen_coral_poly_coastline_with_open_sea <- function(maplatlon, pa, cor, extent, lon1, lon2, lat1, lat2){
+
+  #crop coral polygons to osm extent
+  cor2 = raster::crop(cor, raster::extent(maplatlon$bbox$p1[1], maplatlon$bbox$p2[1],
+                                          maplatlon$bbox$p2[2], maplatlon$bbox$p1[2]))
+
+  #fortify coral polygons
+  cor3 = cor2 %>%
+    ggplot2::fortify(region = "class")
+
+  #fortify mpa polygon
+  pa2 = pa %>%
+    ggplot2::fortify(region = "NAME")
+
+  #read nc land (projection is Lambert new caledonia so needs reproject)
+  land = sf::st_read(here::here("data", "nc_land", "NOUVELLE_CALEDONIE.shp"))
+  sf::st_crs(land) <- 3163
+  land = sf::st_transform(land,  crs = 4326)
+
+  map = ggplot2::ggplot(land) +
+    #land
+    ggplot2::geom_sf(fill = "dark grey", color = "dark grey") +
+    #add open sea category in light blue
+    ggplot2::geom_rect(ggplot2::aes(xmin = 165.225, xmax = 165.45, ymin = -21.65, ymax = -21.62), fill = "light blue") +
+    ggplot2::geom_rect(ggplot2::aes(xmin = 165.225, xmax = 165.35, ymin = -21.62, ymax = -21.595), fill = "light blue") +
+    ggplot2::geom_rect(ggplot2::aes(xmin = 165.225, xmax = 165.25, ymin = -21.595, ymax = -21.52), fill = "light blue") +
+    ggplot2::geom_rect(ggplot2::aes(xmin = 165.25, xmax = 165.255, ymin = -21.60, ymax = -21.57), fill = "light blue") +
+    ggplot2::geom_rect(ggplot2::aes(xmin = 165.25, xmax = 165.28, ymin = -21.60, ymax = -21.587), fill = "light blue") +
+    #add coral polygon
+    ggplot2::geom_polygon(data = cor3, ggplot2::aes(x = long, y = lat, group = group, fill = id)) +
+    #zoom on poe
+    ggplot2::scale_x_continuous(limits = c(lon1, lon2), expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(limits = c(lat2, lat1), expand = c(0.0001, 0.0001)) +
+    #scale bar
+    ggplot2::scale_fill_manual(values = rev(colorspace::qualitative_hcl(length(unique(cor3$id)), c = 70, l = 50))) +
+    #add mpa
+    ggplot2::geom_polygon(data = pa2, ggplot2::aes(x = long, y = lat), col = "yellow", size = 0.6, alpha = 0) +
+    #plot parameters
+    ggplot2::theme(legend.text = ggplot2::element_text(size = 13),
+                   legend.key.size = ggplot2::unit(1.15,"line"),
+                   legend.position = "bottom",
+                   axis.title.x =  ggplot2::element_blank(),
+                   axis.title.y =  ggplot2::element_blank(),
+                   axis.text = ggplot2::element_blank(),
+                   axis.ticks = ggplot2::element_blank(),
+                   panel.grid.major = ggplot2::element_blank(),
+                   panel.grid.minor = ggplot2::element_blank()) +
+    ggplot2::labs(fill = "")
+
+  ggplot2::ggsave(here::here(paste0("outputs/map_allen_coral_poly_coastline_", extent, ".png")), map, width = 7, height = 5)
+
+}
+
+
 #' Make map of coral cover raster
 #'
 #' @param cor
@@ -605,59 +670,23 @@ map_transects <- function(maplatlon, transects, extent, just_poe = FALSE){
 
 map_transects_scalebar_mpa <- function(maplatlon, transects, pa, extent, lat1, lon1, lat2, lon2, dist, offset_lon, offset_lat, just_poe = FALSE){
 
-  #transects = raster::crop(transects, raster::extent(maplatlon$bbox$p1[1], maplatlon$bbox$p2[1], does not work
-  #                                                   maplatlon$bbox$p2[2], maplatlon$bbox$p1[2]))
-
   transects_fortify = ggplot2::fortify(transects)
 
   pa2 = pa %>%
     ggplot2::fortify(region = "NAME")
 
   map = OpenStreetMap::autoplot.OpenStreetMap(maplatlon) + ##convert OSM to ggplot2 format
-    ggplot2::geom_line(data = transects_fortify, ggplot2::aes(x = long, y = lat, group = id), col = "black", alpha = 1) + #transects in black
+    ggplot2::geom_line(data = transects_fortify, ggplot2::aes(x = long, y = lat, group = id), col = "white", alpha = 1) + #transects in white
     ggplot2::geom_polygon(data = pa2, ggplot2::aes(x = long, y = lat), col = "yellow", alpha = 0) + #mpa polygon in yellow
-
-
-    # # #add north arrow (symbol 1 or 3) ###### BOTTOM LEFT ######
-    # ggsn::north(data = NULL,
-    #             x.min = 165.258, x.max = 165.308, y.min = -21.631, y.max = -21.636,
-    #             symbol = 1, scale = 3) +
-    #
-    # #add scalebar
-    # ggsn::scalebar(data = NULL, dist = dist, transform = TRUE, model = "WGS84", dist_unit = "km", height = 0.3,
-    #                x.min = 165.236, x.max = 165.286, y.min = -21.633, y.max = -21.640,
-    #                st.dist = 0.5, st.color = "black", box.color = "black", border.size = 0.7, box.fill = c("white", "black"), st.size = 3.4) +
-
-
-    # # #add north arrow (symbol 1 or 3) ###### TOP RIGHT ######
-    # ggsn::north(data = NULL,
-    #             x.min = 165.448, x.max = 165.468, y.min = -21.523, y.max = -21.529,
-    #             symbol = 1, scale = 2.8) +
-    #
-    # #add scalebar
-    # ggsn::scalebar(data = NULL, dist = dist, transform = TRUE, model = "WGS84", dist_unit = "km", height = 0.3,
-    #                x.min = 165.405, x.max = 165.425, y.min = -21.523, y.max = -21.529,
-    #                st.dist = 0.6, st.color = "white", box.color = "black", border.size = 0.7, box.fill = c("white", "white"), st.size = 3.4) +
-
-
-    # option 3
-  # # #add north arrow (symbol 1 or 3) ###### TOP RIGHT ######
-  ggsn::north(data = NULL,
-              x.min = 165.448, x.max = 165.468, y.min = -21.523, y.max = -21.529,
-              symbol = 1, scale = 2.8) +
-
-  #add scalebar
-  ggsn::scalebar(data = NULL, dist = dist, transform = TRUE, model = "WGS84", dist_unit = "km", height = 0.3,
-                 x.min = 165.219, x.max = 165.269, y.min = -21.633, y.max = -21.640,
-                 st.dist = 0.5, st.color = "white", box.color = "black", border.size = 0.5, box.fill = c("white", "black"), st.size = 3.4) +
-
-
-
-
-
-    #limits on x and y axes
-    #ggplot2::xlim(maplatlon$bbox$p1[1], maplatlon$bbox$p2[1]) +
-    #ggplot2::ylim(maplatlon$bbox$p2[2], maplatlon$bbox$p1[2]) +
+    #add scalebar
+    ggsn::scalebar(data = NULL, dist = 2.5, transform = TRUE, model = "WGS84", dist_unit = "km", height = 0.3,
+                 x.min = 165.20, x.max = 165.30, y.min = -21.633, y.max = -21.640,
+                 st.dist = 0.5, st.color = "white", box.color = "white", border.size = 0.5, box.fill = c("white", "white"), st.size = 3.4) +
+    #north arrow
+    ggspatial::annotation_north_arrow(location = "bl", which_north = "true",
+                                      height = grid::unit(1, "cm"),  width = grid::unit(1, "cm"),
+                                      style = ggspatial::north_arrow_orienteering(line_col = "white"),
+                                      text_col = "white") +
     ggplot2::labs(x = "Longitude", y = "Latitude")
 
   if (just_poe == TRUE) {
@@ -667,6 +696,9 @@ map_transects_scalebar_mpa <- function(maplatlon, transects, pa, extent, lat1, l
   }
 
 }
+
+
+
 
 
 #' Make map of telemetry with one color per date for Poe on effort
@@ -690,7 +722,7 @@ map_telemetry_date_poe_on <- function(maplatlon, telem){
     ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size=3))) + #increase dot size in legend
     ggplot2::theme(axis.title = ggplot2::element_blank())
 
-  ggplot2::ggsave(here::here("outputs/poe_on_effort/map_telemetry_date_poe_on.png"), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here("outputs/map_telemetry_date_poe_on.png"), map, width = 7, height = 5)
 
 }
 
@@ -715,7 +747,7 @@ map_telemetry_video_id_separate_poe_on <- function(maplatlon, telem){
     ggplot2::theme(axis.title = ggplot2::element_blank(),
                    axis.text = ggplot2::element_blank())
 
-  ggplot2::ggsave(here::here("outputs/poe_on_effort/map_telemetry_video_id_separate_poe_on.png"), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here("outputs/map_telemetry_video_id_separate_poe_on.png"), map, width = 7, height = 5)
 
 
 }
@@ -775,9 +807,9 @@ telem_obs %>%
     ggplot2::theme(axis.title = ggplot2::element_blank(),
                    axis.text = ggplot2::element_blank())
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_telemetry_video_id_obs_", species, "_separate_poe_on_p1.png")), map1, width = 7, height = 5)
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_telemetry_video_id_obs_", species, "_separate_poe_on_p2.png")), map2, width = 7, height = 5)
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_telemetry_video_id_obs_", species, "_separate_poe_on_p3.png")), map3, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/map_telemetry_video_id_obs_", species, "_separate_poe_on_p1.png")), map1, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/map_telemetry_video_id_obs_", species, "_separate_poe_on_p2.png")), map2, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/map_telemetry_video_id_obs_", species, "_separate_poe_on_p3.png")), map3, width = 7, height = 5)
 
 
 }
@@ -841,9 +873,10 @@ map_all_species_telemetry_poe_on <- function(maplatlon, telem, telem_obs){
     ggplot2::ylim(maplatlon$bbox$p2[2], maplatlon$bbox$p1[2]) +
     ggplot2::theme(axis.title = ggplot2::element_blank())
 
-  ggplot2::ggsave(here::here("outputs/poe_on_effort/map_all_species_telemetry_poe_on.png"), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here("outputs/map_all_species_telemetry_poe_on.png"), map, width = 7, height = 5)
 
 }
+
 
 #' Make map of telemetry with individual species observations for Poe on effort
 #'
@@ -873,7 +906,7 @@ map_indiv_species_telemetry_poe_on <- function(maplatlon, telem, telem_obs){
     ggplot2::ylim(maplatlon$bbox$p2[2], maplatlon$bbox$p1[2]) +
     ggplot2::theme(axis.title = ggplot2::element_blank())
 
-  ggplot2::ggsave(here::here("outputs/poe_on_effort/map_indiv_species_telemetry_poe_on.png"), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here("outputs/map_indiv_species_telemetry_poe_on.png"), map, width = 7, height = 5)
 
 }
 
@@ -934,7 +967,7 @@ map_indiv_species_telemetry_separate_poe_on <- function(maplatlon, telem, telem_
                    axis.text = ggplot2::element_blank(),
                    strip.text = ggplot2::element_text(size=7)) #facet wrap title size
 
-  ggplot2::ggsave(here::here("outputs/poe_on_effort/map_indiv_species_telemetry_separate_poe_on.png"), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here("outputs/map_indiv_species_telemetry_separate_poe_on.png"), map, width = 7, height = 5)
 
 }
 
@@ -961,7 +994,108 @@ map_telemetry_date_separate_poe_on <- function(maplatlon, telem){
     ggplot2::theme(axis.title = ggplot2::element_blank(),
                    axis.text = ggplot2::element_blank())
 
-  ggplot2::ggsave(here::here("outputs/poe_on_effort/map_telemetry_date_separate_poe_on.png"), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here("outputs/map_telemetry_date_separate_poe_on.png"), map, width = 7, height = 5)
 
 }
 
+
+
+
+
+#' barplot habitat proportion in and out of mpa
+#'
+#' @param df
+#'
+#' @return
+#' @export
+#'
+
+barplot_habitat_proportion_in_out_mpa <- function(df){
+
+  df %>%
+    #select cells with effort
+    dplyr::filter(length > 0) %>%
+    #count proportions of habitat in/out mpa
+    sf::st_drop_geometry() %>%
+    dplyr::count(class, mpa_status) %>%
+    dplyr::group_by(mpa_status) %>%
+    dplyr::mutate(pct = n / sum(n)) -> df
+
+  levels(df$mpa_status) <- c("Inside MPA", "Outside MPA")
+
+  p <- ggplot2::ggplot(data = df, ggplot2::aes(y = pct, x = mpa_status, fill = class)) +
+    ggplot2::geom_bar(stat = "identity", position = "fill") +
+    ggplot2::scale_fill_manual(labels = c("Coral/Algae", "Open Sea", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass"),
+                               values = c(rev(colorspace::qualitative_hcl(length(unique(cor3$id)), c = 70, l = 50))[1], "light blue",
+                                          rev(colorspace::qualitative_hcl(length(unique(cor3$id)), c = 70, l = 50))[2:6]),
+                               name = "Habitat class") +
+    ggplot2::geom_text(ggplot2::aes(label = paste0(round(pct*100), '%')), position = ggplot2::position_stack(vjust = 0.5), size = 3) +
+    ggplot2::scale_y_continuous(labels = c(0, 25, 50, 75, 100)) +
+    ggplot2::ylab("Percentage") +
+    ggplot2::theme(axis.title.x = ggplot2::element_blank(),
+                   axis.title.y = ggplot2::element_text(size = 15),
+                   axis.text.y =  ggplot2::element_text(size = 15),
+                   axis.text.x = ggplot2::element_text(size = 15),
+                   axis.ticks.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_line(size = 0.5, linetype = 'solid',colour = "white"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   legend.position = "right",
+                   legend.title = ggplot2::element_text(size = 14),
+                   legend.text = ggplot2::element_text(size = 12))
+
+  ggplot2::ggsave(here::here("outputs",  "barplot_habitat_proportion_in_out_mpa.png"), p, width = 7, height = 5)
+
+}
+
+
+
+
+#' barplot habitat proportion in whole sampled area
+#'
+#' @param df
+#'
+#' @return
+#' @export
+#'
+
+barplot_habitat_proportion <- function(df){
+
+  df %>%
+    #select cells with effort
+    dplyr::filter(length > 0) %>%
+    #count proportions of habitat in/out mpa
+    sf::st_drop_geometry() %>%
+    dplyr::count(class) %>%
+    dplyr::mutate(pct = n / sum(n)) -> df
+
+  #Dummy group variable
+  df$row <- 1
+
+  p <- ggplot2::ggplot(data = df, ggplot2::aes(y = pct, x = row, fill = class)) +
+    ggplot2::geom_col(stat = "identity", position = "fill") +
+    ggplot2::scale_fill_manual(labels = c("Coral/Algae", "Open Sea", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass"),
+                               values = c(rev(colorspace::qualitative_hcl(length(unique(cor3$id)), c = 70, l = 50))[1], "light blue",
+                                          rev(colorspace::qualitative_hcl(length(unique(cor3$id)), c = 70, l = 50))[2:6]),
+                               name = "Habitat class") +
+    ggplot2::geom_text(ggplot2::aes(label = paste0(round(pct*100), '%')), position = ggplot2::position_stack(vjust = 0.5), size = 3) +
+    ggplot2::scale_y_continuous(labels = c(0, 25, 50, 75, 100)) +
+    ggplot2::ylab("Percentage") +
+    ggplot2::xlab("Whole survey area") +
+    ggplot2::theme(axis.title.x = ggplot2::element_text(size = 15),
+                   axis.title.y = ggplot2::element_text(size = 15),
+                   axis.text.y =  ggplot2::element_text(size = 15),
+                   axis.text.x = ggplot2::element_blank(),
+                   axis.ticks.x = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_line(size = 0.5, linetype = 'solid',colour = "white"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"),
+                   plot.title = ggplot2::element_text(hjust = 0.5),
+                   legend.position = "right",
+                   legend.title = ggplot2::element_text(size = 14),
+                   legend.text = ggplot2::element_text(size = 12))
+
+  ggplot2::ggsave(here::here("outputs",  "barplot_habitat_proportion.png"), p, width = 5, height = 5)
+
+}

@@ -156,7 +156,7 @@ map_tracklen_per_grid_poe <- function(maplatlonproj, polytracks){
     ggplot2::scale_color_gradient(low = "dark grey", high = "red", na.value = NA,
                                   name = "length(m)")
 
-  ggplot2::ggsave(here::here("outputs/poe_on_effort/map_tracklen_per_grid_poe_on.png"), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here("outputs/map_tracklen_per_grid_poe_on.png"), map, width = 7, height = 5)
 
 }
 
@@ -202,7 +202,7 @@ map_tracklen_per_grid_per_date_poe <- function(maplatlonproj, polytracks){
       ggplot2::scale_color_gradient(low = "dark grey", high = "red", na.value = NA,
                                     name = "length(m)")
 
-    ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_tracklen_per_grid_per_date_p", i, "_poe_on.png")), map, width = 7, height = 5)
+    ggplot2::ggsave(here::here(paste0("outputs/map_tracklen_per_grid_per_date_p", i, "_poe_on.png")), map, width = 7, height = 5)
 
   }
 
@@ -324,7 +324,7 @@ map_obs_per_grid_species_poe <- function(maplatlonproj, polygon, species){
     ggplot2::scale_color_gradient(low = "dark grey", high = "red", na.value = NA,
                                   name = "individuals")
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_obs_per_grid_", species, "_poe_on.png")), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/map_obs_per_grid_", species, "_poe_on.png")), map, width = 7, height = 5)
 
 }
 
@@ -360,13 +360,6 @@ map_obs_per_grid_per_date_species_poe <- function(maplatlonproj, polygon, specie
 
   dates = unique(counts$date)
 
-  # if (length(dates) == 10) {nbpages <- 3}
-  # if (length(dates) == 16) {nbpages <- 3}
-  # if (length(dates) == 20) {nbpages <- 3}
-  # if (length(dates) == 18) {nbpages <- 3}
-  # if (length(dates) == 17) {nbpages <- 3}
-  # if (length(dates) == 5) {nbpages <- 3}
-  # if (length(dates) == 5) {nbpages <- 3}
 
   #loop on pages
   #handle error when there is one plot per page (Dolphin and Eagle_ray)
@@ -384,7 +377,7 @@ map_obs_per_grid_per_date_species_poe <- function(maplatlonproj, polygon, specie
         ggplot2::scale_color_gradient(low = "dark grey", high = "red", na.value = NA,
                                       name = "individuals")
 
-      ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_obs_per_grid_per_date_", species, "_p", i, "_poe_on.png")), map, width = 7, height = 5)
+      ggplot2::ggsave(here::here(paste0("outputs/map_obs_per_grid_per_date_", species, "_p", i, "_poe_on.png")), map, width = 7, height = 5)
     }
 
   }
@@ -402,7 +395,7 @@ map_obs_per_grid_per_date_species_poe <- function(maplatlonproj, polygon, specie
         ggplot2::scale_color_gradient(low = "dark grey", high = "red", na.value = NA,
                                       name = "individuals")
 
-      ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_obs_per_grid_per_date_", species, "_p1_poe_on.png")), map, width = 7, height = 5)
+      ggplot2::ggsave(here::here(paste0("outputs/map_obs_per_grid_per_date_", species, "_p1_poe_on.png")), map, width = 7, height = 5)
 
   }
 
@@ -420,7 +413,7 @@ map_obs_per_grid_per_date_species_poe <- function(maplatlonproj, polygon, specie
         ggplot2::scale_color_gradient(low = "dark grey", high = "red", na.value = NA,
                                       name = "individuals")
 
-    ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_obs_per_grid_per_date_", species, "_p", i, "_poe_on.png")), map, width = 7, height = 5)
+    ggplot2::ggsave(here::here(paste0("outputs/map_obs_per_grid_per_date_", species, "_p", i, "_poe_on.png")), map, width = 7, height = 5)
     }
 
   }
@@ -512,7 +505,7 @@ map_dens_per_grid_species_poe <- function(maplatlonproj, polyobs, polytracks, fo
     ggplot2::scale_color_gradient(low = "dark grey", high = "red", na.value = NA,
                                   name = "indiv/ha")
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_dens_per_grid_", species, "_poe_on.png")), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/map_dens_per_grid_", species, "_poe_on.png")), map, width = 7, height = 5)
 
 }
 
@@ -577,7 +570,7 @@ map_dens_per_grid_species_poe_with_megafauna_image <- function(maplatlonproj, po
     dplyr::rename(lon = lon.x, lat = lat.x) %>%
     dplyr::select(-lat.y, -lon.y)
 
-  #coordonnées + title
+  #coordinates + title
   if (species == "Dugong_certain") {
     a <- 336950
     b <- 343700
@@ -590,7 +583,7 @@ map_dens_per_grid_species_poe_with_megafauna_image <- function(maplatlonproj, po
     b <- 343700
     c <- 280800
     d <- 310600
-    species_title <- paste("Sea","turtle",sep = " ")
+    species_title <- "Sea turtle" 
   }
   if (species == "Shark") {
     a <- 337200
@@ -604,14 +597,14 @@ map_dens_per_grid_species_poe_with_megafauna_image <- function(maplatlonproj, po
     b <- 342800
     c <- 281200
     d <- 310200
-    species_title <- paste("Myliobatidae","ray",sep = " ")
+    species_title <- "Myliobatidae" 
   }
   if (species == "Eagle_ray") {
     a <- 338400
     b <- 344200
     c <- 280500
     d <- 309900
-    species_title <- paste("Dasyatidae","ray",sep = " ")
+    species_title <- "Dasyatidae" 
   }
 
   # mpa polygon
@@ -638,9 +631,12 @@ map_dens_per_grid_species_poe_with_megafauna_image <- function(maplatlonproj, po
     #add id_line
   ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_dens_per_grid_", species, "_poe_on_with_megafauna_image.png")), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/map_dens_per_grid_", species, "_poe_on_with_megafauna_image.png")), map, width = 7, height = 5)
 
 }
+
+
+
 
 
 #' Map density per grid cell for given species for POe (nb of observations / (length of tracks in meters * footprint_width in meters))
@@ -703,7 +699,7 @@ map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero <- function(map
     dplyr::rename(lon = lon.x, lat = lat.x) %>%
     dplyr::select(-lat.y, -lon.y)
 
-  #coordonnées + title
+  #coordinates + title
   if (species == "Dugong_certain") {
     a <- 336950
     b <- 343700
@@ -716,7 +712,7 @@ map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero <- function(map
     b <- 343700
     c <- 280800
     d <- 310600
-    species_title <- paste("Sea","turtle",sep = " ")
+    species_title <- "Sea turtle" 
   }
   if (species == "Shark") {
     a <- 337200
@@ -730,14 +726,14 @@ map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero <- function(map
     b <- 342800
     c <- 281200
     d <- 310200
-    species_title <- paste("Dasyatidae","ray",sep = " ")
+    species_title <- "Dasyatidae"
   }
   if (species == "Eagle_ray") {
-    a <- 338400
+    a <- 337500
     b <- 344200
-    c <- 280500
-    d <- 309900
-    species_title <- paste("Myliobatidae","ray",sep = " ")
+    c <- 282200
+    d <- 309000
+    species_title <- "Myliobatidae"
   }
 
   # mpa polygon
@@ -760,6 +756,9 @@ map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero <- function(map
                    axis.text = ggplot2::element_blank(),
                    axis.ticks = ggplot2::element_blank(),
                    plot.title = ggplot2::element_text(hjust = 0.5, size = 18),
+                   panel.background = ggplot2::element_blank(),
+                   panel.grid.major.y = ggplot2::element_blank(),
+                   panel.grid.minor = ggplot2::element_blank(),
                    legend.text = ggplot2::element_text(size = 11),
                    legend.title = ggplot2::element_text(hjust = 0.5, size = 13)) +
     ggplot2::scale_color_gradient(low = "bisque1", high = "red3", na.value = NA,
@@ -768,9 +767,166 @@ map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero <- function(map
     #add id_line
     ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_dens_per_grid_", species, "_poe_on_with_megafauna_image_log_with_zero.png")), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/map_dens_per_grid_", species, "_poe_on_with_megafauna_image_log_with_zero.png")), map, width = 7, height = 5)
 
 }
+
+
+
+
+
+
+
+
+
+
+
+#' Map density per grid cell for given species for POe (nb of observations / (length of tracks in meters * footprint_width in meters))
+#' with mpa overlaid and with megafauna image with zero
+#' with coastline instead of OSM
+#'
+#' @param polyobs
+#' @param polytracks
+#' @param footprintwidth
+#' @param species
+#' @param pa
+#' @param img
+#'
+#' @return
+#' @export
+#'
+
+map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero_coastline <- function(polyobs, polytracks, footprintwidth, species, pa, img){
+
+  # select polygons with counts of species
+  polyobs2 = polyobs %>%
+    dplyr::filter(object == species)
+
+  # convert back to spatial object for plotting
+  polyobs3 = sf::as_Spatial(polyobs2)
+
+  # make dataframe for plotting
+  counts = data.frame(id = polyobs3$id,
+                      count = polyobs3$n,
+                      date = polyobs3$date,
+                      lon = coordinates(polyobs3)[,1],
+                      lat = coordinates(polyobs3)[,2])
+
+  #IMPORTANT to sum counts per cell across all flights
+  counts2 = counts %>%
+    dplyr::group_by(id, lat, lon) %>%
+    dplyr::summarise(tot_count = sum(count)) %>%
+    dplyr::filter(tot_count > 0)
+
+  # convert back to spatial object for plotting (in meters)
+  polytracks2 = sf::as_Spatial(polytracks)
+
+  # make dataframe for plotting
+  effort = data.frame(id = polytracks2$id,
+                      length = as.numeric(polytracks2$length), #convert class units to numeric
+                      lon = coordinates(polytracks2)[,1],
+                      lat = coordinates(polytracks2)[,2])
+
+  # sum length per grid cell and select polygons with effort > 0
+  effort2 = effort %>%
+    dplyr::group_by(id, lat, lon) %>%
+    dplyr::summarise(tot_length = sum(length)) %>% #IMPORTANT to sum lenght per cell across all flights
+    dplyr::filter(tot_length > 0)
+
+  # merge effort and counts based on polygon id and calculate density
+  result = counts2 %>%
+    dplyr::left_join(effort2, by = "id") %>%
+    dplyr::mutate(density = tot_count / (tot_length*footprintwidth))  %>% #density in indiv/m2
+    dplyr::mutate(density = density * 10000)  %>%  #density in indiv/ha (1 ha = 10000m2 - 1m2 = 10-4 ha)
+    dplyr::rename(lon = lon.x, lat = lat.x) %>%
+    dplyr::select(-lat.y, -lon.y)
+
+  #read nc land (projection is Lambert new caledonia)
+  land = sf::st_read(here::here("data", "nc_land", "NOUVELLE_CALEDONIE.shp"))
+  sf::st_crs(land) <- 3163
+
+
+  #coordinates + title
+  if (species == "Dugong_certain") {
+    a <- 337200
+    b <- 343000
+    c <- 281400
+    d <- 311500
+    species_title <- "Dugong"
+  }
+  if (species == "Turtle") {
+    a <- 338300
+    b <- 343700
+    c <- 280800
+    d <- 310600
+    species_title <- "Sea turtle" 
+  }
+  if (species == "Shark") {
+    a <- 337200
+    b <- 343000
+    c <- 281400
+    d <- 311500
+    species_title <- "Shark"
+  }
+  if (species == "Round_ray") {
+    a <- 337600
+    b <- 342800
+    c <- 281200
+    d <- 310200
+    species_title <- "Dasyatidae" 
+  }
+  if (species == "Eagle_ray") {
+    a <- 338400
+    b <- 344200
+    c <- 280500
+    d <- 309900
+    species_title <- "Myliobatidae" 
+  }
+
+
+  #project mpa polygon
+  paproj = sp::spTransform(pa, CRS("+init=epsg:3163")) #NC projection
+
+  # fortify
+  pa2 = paproj %>%
+    ggplot2::fortify(region = "NAME")
+
+  map = ggplot2::ggplot(land) +
+    #land
+    ggplot2::geom_sf(fill = "grey50", color = "grey50") +
+    #add cells were there were tracks with no observations (ie zeros)
+    ggplot2::geom_point(data = effort2, ggplot2::aes(x = lon, y = lat), color = "grey80", shape = 15, size=1.5) +
+    ggplot2::geom_point(data = result, ggplot2::aes(x = lon, y = lat, color = log(density)), shape = 15, size=1.5) +
+    ggplot2::geom_polygon(data = pa2, ggplot2::aes(x = long, y = lat), col = "yellow", alpha = 0.1) +
+    #zoom on poe
+    ggplot2::scale_x_continuous(limits = c(min(effort2$lon), max(effort2$lon))) +
+    ggplot2::scale_y_continuous(limits = c(min(effort2$lat)-1000, max(effort2$lat))) +
+    ggplot2::ggtitle(species_title) +
+    #north arrow
+    ggspatial::annotation_north_arrow(location = "bl", which_north = "true", 
+                                      height = grid::unit(1, "cm"),  width = grid::unit(1, "cm"), 
+                                      style = ggspatial::north_arrow_orienteering(line_col = "grey20")) +
+    #scalebar
+    ggspatial::annotation_scale(location = "bl", bar_cols = c("grey20", "white"), 
+                                pad_x = grid::unit(0.65, "in"), pad_y = grid::unit(0.2, "in")) +
+    ggplot2::theme(axis.title = ggplot2::element_blank(),
+                   axis.text = ggplot2::element_blank(),
+                   axis.ticks = ggplot2::element_blank(),
+                   plot.title = ggplot2::element_text(hjust = 0.5, size = 18),
+                   legend.text = ggplot2::element_text(size = 11),
+                   legend.title = ggplot2::element_text(hjust = 0.5, size = 13),
+                   panel.background = ggplot2::element_rect(fill = "light cyan", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_blank(),
+                   panel.grid.minor = ggplot2::element_blank()) +
+    ggplot2::scale_color_gradient(low = "bisque1", high = "red3", na.value = NA,
+                                  name = "Log \nind / ha") +
+    #add megafauna image
+    ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
+
+  ggplot2::ggsave(here::here(paste0("outputs/map_dens_per_grid_", species, "_poe_on_with_megafauna_image_log_with_zero_coastline.png")), map, width = 7, height = 5)
+
+}
+
 
 
 
@@ -834,7 +990,7 @@ map_dens_per_grid_species_poe_with_megafauna_image_log <- function(maplatlonproj
     dplyr::rename(lon = lon.x, lat = lat.x) %>%
     dplyr::select(-lat.y, -lon.y)
 
-  #coordonnées + title
+  #coordinates + title
   if (species == "Dugong_certain") {
     a <- 336950
     b <- 343700
@@ -847,7 +1003,7 @@ map_dens_per_grid_species_poe_with_megafauna_image_log <- function(maplatlonproj
     b <- 343700
     c <- 280800
     d <- 310600
-    species_title <- paste("Sea","turtle",sep = " ")
+    species_title <- "Sea turtle"
   }
   if (species == "Shark") {
     a <- 337200
@@ -861,14 +1017,14 @@ map_dens_per_grid_species_poe_with_megafauna_image_log <- function(maplatlonproj
     b <- 342800
     c <- 281200
     d <- 310200
-    species_title <- paste("Myliobatidae","ray",sep = " ")
+    species_title <- "Myliobatidae"
   }
   if (species == "Eagle_ray") {
     a <- 338400
     b <- 344200
     c <- 280500
     d <- 309900
-    species_title <- paste("Dasyatidae","ray",sep = " ")
+    species_title <- "Dasyatidae" 
   }
 
   # mpa polygon
@@ -897,7 +1053,7 @@ map_dens_per_grid_species_poe_with_megafauna_image_log <- function(maplatlonproj
     #add id_line
     ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
 
-    ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_dens_per_grid_", species, "_poe_on_with_megafauna_image_log.png")), map, width = 7, height = 5)
+    ggplot2::ggsave(here::here(paste0("outputs/map_dens_per_grid_", species, "_poe_on_with_megafauna_image_log.png")), map, width = 7, height = 5)
 
 }
 
@@ -968,7 +1124,7 @@ map_dens_per_grid_per_date_species_poe <- function(maplatlonproj, polyobs, polyt
       ggplot2::scale_color_gradient(low = "dark grey", high = "red", na.value = NA,
                                     name = "indiv/ha")
 
-    ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_dens_per_grid_per_date_", species, "_p", i, "_poe_on.png")), map, width = 7, height = 5)
+    ggplot2::ggsave(here::here(paste0("outputs/map_dens_per_grid_per_date_", species, "_p", i, "_poe_on.png")), map, width = 7, height = 5)
 
   }
 
@@ -1104,13 +1260,17 @@ map_obs_per_coral_poly_species_poe <- function(maplatlonproj, polygon, species){
                    axis.text = ggplot2::element_blank(),
                    axis.ticks = ggplot2::element_blank())
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_obs_per_coral_poly_", species, "_poe_on.png")), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/map_obs_per_coral_poly_", species, "_poe_on.png")), map, width = 7, height = 5)
 
 
 }
 
 
-#' Map nbr survey with sightings per pixels
+
+
+
+
+#' Map nbr survey with sightings per grid with image
 #'
 #' @param maplatlonproj
 #' @param polygon
@@ -1123,7 +1283,7 @@ map_obs_per_coral_poly_species_poe <- function(maplatlonproj, polygon, species){
 #' @export
 #'
 
-map_nbr_survey_with_sightings_per_pixels <- function(maplatlonproj, polytracks, polygon, species, pa, img){
+map_nbr_survey_with_sightings_per_grid_image <- function(maplatlonproj, polytracks, polygon, species, pa, img){
 
   # select polygons with counts > 0 for species
   polygon2 = polygon %>%
@@ -1166,7 +1326,7 @@ map_nbr_survey_with_sightings_per_pixels <- function(maplatlonproj, polytracks, 
 
 
 
-  #coordonnées + title
+  #coordinates + title
   if (species == "Dugong_certain") {
     a <- 336950
     b <- 343700
@@ -1179,7 +1339,7 @@ map_nbr_survey_with_sightings_per_pixels <- function(maplatlonproj, polytracks, 
     b <- 343700
     c <- 280800
     d <- 310600
-    species_title <- paste("Sea","turtle",sep = " ")
+    species_title <- "Sea turtle" 
   }
   if (species == "Shark") {
     a <- 337200
@@ -1193,14 +1353,14 @@ map_nbr_survey_with_sightings_per_pixels <- function(maplatlonproj, polytracks, 
     b <- 342800
     c <- 281200
     d <- 310200
-    species_title <- paste("Dasyatidae","ray",sep = " ")
+    species_title <- "Dasyatidae" 
   }
   if (species == "Eagle_ray") {
-    a <- 338400
+    a <- 337500
     b <- 344200
-    c <- 280500
-    d <- 309900
-    species_title <- paste("Myliobatidae","ray",sep = " ")
+    c <- 282200
+    d <- 309000
+    species_title <- "Myliobatidae" 
   }
 
   # mpa polygon
@@ -1225,6 +1385,9 @@ map_nbr_survey_with_sightings_per_pixels <- function(maplatlonproj, polytracks, 
                    axis.text = ggplot2::element_blank(),
                    axis.ticks = ggplot2::element_blank(),
                    plot.title = ggplot2::element_text(hjust = 0.5, size = 18),
+                   panel.background = ggplot2::element_blank(),
+                   panel.grid.major.y = ggplot2::element_blank(),
+                   panel.grid.minor = ggplot2::element_blank(),
                    legend.text = ggplot2::element_text(size = 11),
                    legend.title = ggplot2::element_text(size = 13)) +
     ggplot2::scale_color_gradient(low = "bisque1", high = "red3", na.value = NA,
@@ -1234,7 +1397,155 @@ map_nbr_survey_with_sightings_per_pixels <- function(maplatlonproj, polytracks, 
     ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
 
 
-  ggplot2::ggsave(here::here(paste0("outputs/poe_on_effort/map_nbr_survey_with_sightings_per_pixels_", species, "_poe_on.png")), map, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/map_nbr_survey_with_sightings_per_grid_", species, "_poe_on_image.png")), map, width = 7, height = 5)
 
+}
+
+
+
+
+
+
+#' Map nbr survey with sightings per grid with image with coastline instead of OSM
+#'
+#' @param polygon
+#' @param species
+#' @param pa
+#' @param img
+#' @param polytracks 
+#'
+#' @return
+#' @export
+#'
+
+map_nbr_survey_with_sightings_per_grid_image_coastline <- function(polytracks, polygon, species, pa, img){
+  
+  # select polygons with counts > 0 for species
+  polygon2 = polygon %>%
+    dplyr::filter(object == species)
+  
+  # convert back to spatial object for plotting
+  polygon3 = sf::as_Spatial(polygon2)
+  
+  # make dataframe for plotting
+  counts = data.frame(id = polygon3$id,
+                      count = polygon3$n,
+                      date = polygon3$date,
+                      lon = coordinates(polygon3)[,1],
+                      lat = coordinates(polygon3)[,2])
+  
+  #group id, lat, lon
+  counts2 = counts %>%
+    dplyr::group_by(id, lat, lon)
+  
+  #count number of dates where there are observations per pixels
+  counts3 = counts2 %>%
+    dplyr::count(id) %>%
+    #frequence = nbr surveyw with sightings / nbr surveys
+    dplyr::mutate(freq = n/20)
+  
+  # convert back to spatial object for plotting (in meters)
+  polytracks2 = sf::as_Spatial(polytracks)
+  
+  # make dataframe for plotting
+  effort = data.frame(id = polytracks2$id,
+                      length = as.numeric(polytracks2$length), #convert class units to numeric
+                      lon = coordinates(polytracks2)[,1],
+                      lat = coordinates(polytracks2)[,2])
+  
+  # sum length per grid cell and select polygons with effort > 0
+  effort2 = effort %>%
+    dplyr::group_by(id, lat, lon) %>%
+    dplyr::summarise(tot_length = sum(length)) %>% #IMPORTANT to sum lenght per cell across all flights
+    dplyr::filter(tot_length > 0)
+  
+  
+  
+  #coordinates + title
+  if (species == "Dugong_certain") {
+    a <- 336950
+    b <- 343700
+    c <- 281050
+    d <- 311700
+    species_title <- "Dugong"
+  }
+  if (species == "Turtle") {
+    a <- 338300
+    b <- 343700
+    c <- 280800
+    d <- 310600
+    species_title <- "Sea turtle"
+  }
+  if (species == "Shark") {
+    a <- 337200
+    b <- 343000
+    c <- 281400
+    d <- 311500
+    species_title <- "Shark"
+  }
+  if (species == "Round_ray") {
+    a <- 337600
+    b <- 342800
+    c <- 281200
+    d <- 310200
+    species_title <- "Dasyatidae"
+  }
+  if (species == "Eagle_ray") {
+    a <- 338400
+    b <- 344200
+    c <- 280500
+    d <- 309900
+    species_title <- "Myliobatidae"
+  }
+  
+  # mpa polygon
+  
+  #project mpa polygon
+  paproj = sp::spTransform(pa, CRS("+init=epsg:3163")) #NC projection
+  
+  # fortify
+  pa2 = paproj %>%
+    ggplot2::fortify(region = "NAME")
+  
+  #read nc land (projection is Lambert new caledonia)
+  land = sf::st_read(here::here("data", "nc_land", "NOUVELLE_CALEDONIE.shp"))
+  sf::st_crs(land) <- 3163
+  
+  map = ggplot2::ggplot(land) +
+    #land
+    ggplot2::geom_sf(fill = "grey50", color = "grey50") +
+    #add zero
+    ggplot2::geom_point(data = effort2, ggplot2::aes(x = lon, y = lat), color = "grey80", shape = 15, size=1.5) +
+    ggplot2::geom_point(data = counts3, ggplot2::aes(x = lon, y = lat, color = freq), shape = 15, size=1.5) +
+    ggplot2::ggtitle(species_title) +
+    ggplot2::geom_polygon(data = pa2, ggplot2::aes(x = long, y = lat), col = "yellow", alpha = 0.1) +
+    #zoom on poe
+    ggplot2::scale_x_continuous(limits = c(min(effort2$lon), max(effort2$lon))) +
+    ggplot2::scale_y_continuous(limits = c(min(effort2$lat)-1000, max(effort2$lat))) +
+    #north arrow
+    ggspatial::annotation_north_arrow(location = "bl", which_north = "true", 
+                                      height = grid::unit(1, "cm"),  width = grid::unit(1, "cm"), 
+                                      style = ggspatial::north_arrow_orienteering(line_col = "grey20")) +
+    #scalebar
+    ggspatial::annotation_scale(location = "bl", bar_cols = c("grey20", "white"), 
+                                pad_x = grid::unit(0.65, "in"), pad_y = grid::unit(0.2, "in")) +
+    ggplot2::theme(axis.title = ggplot2::element_blank(),
+                   axis.text = ggplot2::element_blank(),
+                   axis.ticks = ggplot2::element_blank(),
+                   plot.title = ggplot2::element_text(hjust = 0.5, size = 18),
+                   legend.text = ggplot2::element_text(size = 11),
+                   legend.title = ggplot2::element_text(hjust = 0.5, size = 13),
+                   panel.background = ggplot2::element_rect(fill = "light cyan", colour = "white",size = 0.5, linetype = "solid"),
+                   panel.grid.major = ggplot2::element_blank(),
+                   panel.grid.minor = ggplot2::element_blank()) +
+    ggplot2::scale_color_gradient(low = "bisque1", high = "red3", na.value = NA,
+                                  name = "Occurrence \nfrequency") +
+    
+    # #add megafauna image
+    ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
+  
+  
+  ggplot2::ggsave(here::here(paste0("outputs/map_nbr_survey_with_sightings_per_grid_", species, "_poe_on_image_coastline.png")), map, width = 7, height = 5)
+  
 }
 
