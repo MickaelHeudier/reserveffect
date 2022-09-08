@@ -250,10 +250,10 @@ sum(grid_tracks_per_date$length, na.rm=T) #1553071 m
 sum(grid_tracks_per_date$length, na.rm=T) / length(dates) #77654 m
 
 #Total surveyed area
-footprint_width * sum(grid_tracks_per_date$length, na.rm=T) # 137813538 m2
+footprint_width * sum(grid_tracks_per_date$length, na.rm=T) # 137813538 m2 =  137.81 km2
 
 #Mean surveyed area per survey date
-footprint_width * sum(grid_tracks_per_date$length, na.rm=T) / length(dates) #6890677 m
+footprint_width * sum(grid_tracks_per_date$length, na.rm=T) / length(dates) #6890677 m2 = 6.89 km2
 
 #Map length of tracks per grid cell per date
 map_tracklen_per_grid_per_date_poe(maplatlon_sm_proj, grid_tracks_per_date)
@@ -337,7 +337,7 @@ map_nbr_survey_with_sightings_per_grid_image_coastline(grid_tracks_per_date, gri
 ############################################ DENSITY COMPARISONS #############################################################
 
 #Make dataframe per grid cell centers (including empty cell centers) of observations, track length and densities per date and per species for POe
-df_all_species = make_df_all_species_poe(grid_obs_per_date, grid_tracks_per_date, footprint_width)
+df_all_species = make_df_all_species_poe(grid_obs_per_date, grid_tracks_per_date, footprint_width) #desnity in ind / ha
 
 #intersect density dataframe with coral and mpa status
 #NB dataframe points are intersected with polygons
@@ -362,15 +362,8 @@ dat$percent <- 100*(dat$sum / sum(dat$sum))
 
 ###barplots
 
-#Allen coral habitat
-barplot_density_allen_coral(df_all_species_coral, "Dugong_certain")
-barplot_density_allen_coral(df_all_species_coral, "Turtle")
-barplot_density_allen_coral(df_all_species_coral, "Shark")
-barplot_density_allen_coral(df_all_species_coral, "Round_ray")
-barplot_density_allen_coral(df_all_species_coral, "Eagle_ray")
 
-
-#Allen coral habitat with image
+#Mean density per habitat
 barplot_density_allen_coral_image(df_all_species_coral, "Dugong_certain", img_Dugong_certain)
 barplot_density_allen_coral_image(df_all_species_coral, "Turtle", img_Turtle)
 barplot_density_allen_coral_image(df_all_species_coral, "Shark", img_Shark)
@@ -378,15 +371,7 @@ barplot_density_allen_coral_image(df_all_species_coral, "Round_ray", img_Round_r
 barplot_density_allen_coral_image(df_all_species_coral, "Eagle_ray", img_Eagle_ray)
 
 
-#mpa
-barplot_density_mpa(df_all_species_coral_mpa, "Dugong_certain")
-barplot_density_mpa(df_all_species_coral_mpa, "Turtle")
-barplot_density_mpa(df_all_species_coral_mpa, "Shark")
-barplot_density_mpa(df_all_species_coral_mpa, "Round_ray")
-barplot_density_mpa(df_all_species_coral_mpa, "Eagle_ray")
-
-
-#mpa with image
+#Mean density in/out mpa
 barplot_density_mpa_image(df_all_species_coral_mpa, "Dugong_certain", img_Dugong_certain)
 barplot_density_mpa_image(df_all_species_coral_mpa, "Turtle", img_Turtle)
 barplot_density_mpa_image(df_all_species_coral_mpa, "Shark", img_Shark)
@@ -394,20 +379,14 @@ barplot_density_mpa_image(df_all_species_coral_mpa, "Round_ray", img_Round_ray)
 barplot_density_mpa_image(df_all_species_coral_mpa, "Eagle_ray", img_Eagle_ray)
 
 
-#Allen coral habitat and mpa
-barplot_density_allen_coral_mpa(df_all_species_coral_mpa, "Dugong_certain")
-barplot_density_allen_coral_mpa(df_all_species_coral_mpa, "Turtle")
-barplot_density_allen_coral_mpa(df_all_species_coral_mpa, "Shark")
-barplot_density_allen_coral_mpa(df_all_species_coral_mpa, "Round_ray")
-barplot_density_allen_coral_mpa(df_all_species_coral_mpa, "Eagle_ray")
-
-
-#Allen coral habitat and mpa with image
+#Mean density per habitat and in/out mpa
 barplot_density_allen_coral_mpa_image(df_all_species_coral_mpa, "Dugong_certain", img_Dugong_certain)
 barplot_density_allen_coral_mpa_image(df_all_species_coral_mpa, "Turtle", img_Turtle)
 barplot_density_allen_coral_mpa_image(df_all_species_coral_mpa, "Shark", img_Shark)
 barplot_density_allen_coral_mpa_image(df_all_species_coral_mpa, "Round_ray", img_Round_ray)
 barplot_density_allen_coral_mpa_image(df_all_species_coral_mpa, "Eagle_ray", img_Eagle_ray)
+
+
 
 
 
@@ -467,7 +446,7 @@ boxplot_density_allen_coral_mpa_with_megafauna_image_log(df_all_species_coral_mp
 #barplot habitat proportion in and out of mpa: Figure 3 B
 barplot_habitat_proportion_in_out_mpa(df_all_species_coral_mpa)
 
-#barplot habitat proportion in whole sampled area
+#barplot habitat proportion in whole sampled area: Figure 3 B
 barplot_habitat_proportion(df_all_species_coral_mpa)
 
 
@@ -487,7 +466,7 @@ make_permanova_barplot_allen_coral_mpa_with_all_species(df_all_species_coral_mpa
 
 
 
-### pairwise comparisons for species with signif effects ***add bonferroni corr?
+### pairwise comparisons for species with signif effects 
 
 ## Dugong interaction
 comp_dug = make_pairwise_comparison_allen_coral_mpa(df_all_species_coral_mpa, "Dugong_certain")
@@ -498,8 +477,3 @@ comp_rou1 = make_pairwise_comparison_allen_coral(df_all_species_coral_mpa, "Roun
 ## Dasyatidae interaction
 comp_rou2 = make_pairwise_comparison_allen_coral_mpa(df_all_species_coral_mpa, "Round_ray")
 
-
-
-### barplots density with pairwise comparision test results
-
-#barplot_density_allen_coral_pairwise_image(df_all_species_coral_mpa, "Dugong_certain", img_Dugong_certain)

@@ -4,7 +4,7 @@
 \alias{map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero_coastline}
 \title{Map density per grid cell for given species for POe (nb of observations / (length of tracks in meters * footprint_width in meters))
 with mpa overlaid and with megafauna image with zero
-with coastline for better view of images}
+with coastline instead of OSM}
 \usage{
 map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero_coastline(
   polyobs,
@@ -24,5 +24,5 @@ map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero_coastline(
 \description{
 Map density per grid cell for given species for POe (nb of observations / (length of tracks in meters * footprint_width in meters))
 with mpa overlaid and with megafauna image with zero
-with coastline for better view of images
+with coastline instead of OSM
 }

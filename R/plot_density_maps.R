@@ -729,10 +729,10 @@ map_dens_per_grid_species_poe_with_megafauna_image_log_with_zero <- function(map
     species_title <- "Dasyatidae"
   }
   if (species == "Eagle_ray") {
-    a <- 337500
-    b <- 344200
-    c <- 282200
-    d <- 309000
+    a <- 338000
+    b <- 344000
+    c <- 282800
+    d <- 308500
     species_title <- "Myliobatidae"
   }
 
@@ -1356,12 +1356,13 @@ map_nbr_survey_with_sightings_per_grid_image <- function(maplatlonproj, polytrac
     species_title <- "Dasyatidae" 
   }
   if (species == "Eagle_ray") {
-    a <- 337500
-    b <- 344200
-    c <- 282200
-    d <- 309000
+    a <- 338000
+    b <- 344000
+    c <- 282800
+    d <- 308500
     species_title <- "Myliobatidae" 
   }
+  
 
   # mpa polygon
 

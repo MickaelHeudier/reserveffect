@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_density_maps.R
 \name{map_nbr_survey_with_sightings_per_grid_image_coastline}
 \alias{map_nbr_survey_with_sightings_per_grid_image_coastline}
-\title{Map nbr survey with sightings per grid with image with coastline for better view of image}
+\title{Map nbr survey with sightings per grid with image with coastline instead of OSM}
 \usage{
 map_nbr_survey_with_sightings_per_grid_image_coastline(
   polytracks,
@@ -19,5 +19,5 @@ map_nbr_survey_with_sightings_per_grid_image_coastline(
 
 }
 \description{
-Map nbr survey with sightings per grid with image with coastline for better view of image
+Map nbr survey with sightings per grid with image with coastline instead of OSM
 }

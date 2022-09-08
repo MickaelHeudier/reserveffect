@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_read_clean.R
 \name{read_megafauna_image}
 \alias{read_megafauna_image}
-\title{Read megafauna image in png format}
+\title{Read megafauna image in png format (original black silhouette)}
 \usage{
 read_megafauna_image(species)
 }
@@ -13,5 +13,5 @@ read_megafauna_image(species)
 
 }
 \description{
-Read megafauna image in png format
+Read megafauna image in png format (original black silhouette)
 }

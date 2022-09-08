@@ -80,74 +80,74 @@ make_df_all_species_poe <- function(polyobs, polytracks, footprintwidth){
     dplyr::right_join(polytracks4, by = c("id"))  %>%
     #compute desnity per date and per species
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_07_24"),
-                                .fns = function(x){1000 * x/(length_2021_07_24*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_07_24*footprintwidth)}, #density converted from ind/m2 to in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_07_29"),
-                                .fns = function(x){1000 * x/(length_2021_07_29*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_07_29*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_08_08"),
-                                .fns = function(x){1000 * x/(length_2021_08_08*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_08_08*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_08_21"),
-                                .fns = function(x){1000 * x/(length_2021_08_21*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_08_21*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_09_05"),
-                                .fns = function(x){1000 * x/(length_2021_09_05*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_09_05*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_09_12"),
-                                .fns = function(x){1000 * x/(length_2021_09_12*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_09_12*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_09_14"),
-                                .fns = function(x){1000 * x/(length_2021_09_14*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_09_14*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_10_06"),
-                                .fns = function(x){1000 * x/(length_2021_10_06*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_10_06*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_10_18"),
-                                .fns = function(x){1000 * x/(length_2021_10_18*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_10_18*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_10_23"),
-                                .fns = function(x){1000 * x/(length_2021_10_23*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_10_23*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_10_31"),
-                                .fns = function(x){1000 * x/(length_2021_10_31*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_10_31*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_11_06"),
-                                .fns = function(x){1000 * x/(length_2021_11_06*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_11_06*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_11_10"),
-                                .fns = function(x){1000 * x/(length_2021_11_10*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_11_10*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_11_11"),
-                                .fns = function(x){1000 * x/(length_2021_11_11*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_11_11*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_11_14"),
-                                .fns = function(x){1000 * x/(length_2021_11_14*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_11_14*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_11_16"),
                                 .fns = function(x){1000 * x/(length_2021_11_16*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_11_23"),
-                                .fns = function(x){1000 * x/(length_2021_11_23*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_11_23*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_11_24"),
-                                .fns = function(x){1000 * x/(length_2021_11_24*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_11_24*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_11_26"),
-                                .fns = function(x){1000 * x/(length_2021_11_26*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_11_26*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     dplyr::mutate(dplyr::across(tidyselect::ends_with("2021_11_29"),
-                                .fns = function(x){1000 * x/(length_2021_11_29*footprintwidth)}, #density in indiv / ha
+                                .fns = function(x){10000 * x/(length_2021_11_29*footprintwidth)}, #density in indiv / ha
                                 .names = "density_{.col}")) %>%
     #compute density per species
-    dplyr::mutate(density_Turtle = 1000 * n_Turtle / (length*footprintwidth)) %>%  #density in indiv / ha
-    dplyr::mutate(density_Dugong_certain = 1000 * n_Dugong_certain / (length*footprintwidth)) %>%  #density in indiv / ha
-    dplyr::mutate(density_Dugong_probable = 1000 * n_Dugong_probable / (length*footprintwidth)) %>%  #density in indiv / ha
-    dplyr::mutate(density_Round_ray = 1000 * n_Round_ray / (length*footprintwidth)) %>%  #density in indiv / ha
-    dplyr::mutate(density_Eagle_ray = 1000 * n_Eagle_ray / (length*footprintwidth)) %>%  #density in indiv / ha
-    dplyr::mutate(density_Manta_ray = 1000 * n_Manta_ray / (length*footprintwidth)) %>%  #density in indiv / ha
-    dplyr::mutate(density_Dolphin = 1000 * n_Dolphin / (length*footprintwidth)) %>%  #density in indiv / ha
-    dplyr::mutate(density_Shark = 1000 * n_Shark / (length*footprintwidth)) %>%  #density in indiv / ha
+    dplyr::mutate(density_Turtle = 10000 * n_Turtle / (length*footprintwidth)) %>%  #density in indiv / ha
+    dplyr::mutate(density_Dugong_certain = 10000 * n_Dugong_certain / (length*footprintwidth)) %>%  #density in indiv / ha
+    dplyr::mutate(density_Dugong_probable = 10000 * n_Dugong_probable / (length*footprintwidth)) %>%  #density in indiv / ha
+    dplyr::mutate(density_Round_ray = 10000 * n_Round_ray / (length*footprintwidth)) %>%  #density in indiv / ha
+    dplyr::mutate(density_Eagle_ray = 10000 * n_Eagle_ray / (length*footprintwidth)) %>%  #density in indiv / ha
+    dplyr::mutate(density_Manta_ray = 10000 * n_Manta_ray / (length*footprintwidth)) %>%  #density in indiv / ha
+    dplyr::mutate(density_Dolphin = 10000 * n_Dolphin / (length*footprintwidth)) %>%  #density in indiv / ha
+    dplyr::mutate(density_Shark = 10000 * n_Shark / (length*footprintwidth)) %>%  #density in indiv / ha
 
     #clean
     dplyr::select(-tidyselect::starts_with("density_length")) %>%
@@ -369,115 +369,9 @@ intersect_df_mpa_allen_poly <- function(df, mpa_poly){
 
 
 
-#' Barplot of mean density per coral habitat with data Allen
-#'
-#' @param df
-#' @param species
-#'
-#' @return
-#' @export
-#'
-
-barplot_density_allen_coral <- function(df, species){
-
-  #mean density per coral hab for given species
-  df %>%
-    dplyr::mutate(density = get(paste0("density_", species))) %>%
-    dplyr::mutate(coral_hab = get(paste("class"))) %>%
-    dplyr::select(c(density, coral_hab)) %>%
-    dplyr::group_by(coral_hab) %>%
-    dplyr::summarize(mean = mean(density, na.rm=T),
-                     sd = sd(density, na.rm=T),
-                     se = sd / sqrt(length(density))) -> new
-
-  # convert back to spatial object for plotting
-  new = sf::as_Spatial(new)
-
-  # make dataframe for plotting
-  new = data.frame(mean_dens = new$mean,
-                   sd_dens = new$sd,
-                   se_dens = new$se,
-                   coral_hab = as.factor(new$coral_hab))
-
-  #rename deep_Sea
-  levels(new$coral_hab) <- c("Coral/Algae", "Open Sea", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass")
-
-  # plot
-  p = ggplot2::ggplot(new, ggplot2::aes(x = coral_hab, y = mean_dens)) +
-    ggplot2::geom_col() +
-    ggplot2::geom_errorbar(ggplot2::aes(x = coral_hab, ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, colour="orange", alpha=0.9, size=1.3) +
-    ggplot2::xlab("") +
-    ggplot2::ylab("Density") +
-    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
-                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1, size =12),
-                   axis.title.y = ggplot2::element_text(size = 15),
-                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
-                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
-                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"))
 
 
-  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_allen_coral_", species, ".png")), p, width = 7, height = 5)
-
-}
-
-
-
-
-
-
-#' Barplot of mean density per mpa status (in/out mpa)
-#'
-#' @param df
-#' @param species
-#'
-#' @return
-#' @export
-#'
-
-barplot_density_mpa <- function(df, species){
-
-  #mean density and se for given species
-  df %>%
-    dplyr::mutate(density = get(paste0("density_", species))) %>%
-    dplyr::group_by(mpa_status) %>%
-    dplyr::summarize(mean = mean(density, na.rm=T),
-                     sd = sd(density, na.rm=T),
-                     se = sd / sqrt(length(density))) -> new
-
-  # convert back to spatial object for plotting
-  new = sf::as_Spatial(new)
-
-  # make dataframe for plotting
-  new = data.frame(mean_dens = new$mean,
-                   sd_dens = new$sd,
-                   se_dens = new$se,
-                   mpa_status = as.factor(new$mpa_status))
-
-  levels(new$mpa_status) <- c("Inside MPA", "Outside MPA")
-
-
-  # plot
-  p = ggplot2::ggplot(new, ggplot2::aes(x = mpa_status, y = mean_dens)) +
-    ggplot2::geom_col() +
-    ggplot2::geom_errorbar(ggplot2::aes(x = mpa_status, ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, colour="orange", alpha=0.9, size=1.3) +
-    ggplot2::xlab("") +
-    ggplot2::ylab("Density") +
-    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
-                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1, size =12),
-                   axis.title.y = ggplot2::element_text(size = 15),
-                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
-                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
-                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"))
-
-
-  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_mpa_", species, ".png")), p, width = 7, height = 5)
-
-}
-
-
-
-
-#' Barplot of mean density per coral habitat with data Allen with image
+#' Barplot of mean density per Allen coral habitat with image
 #'
 #' @param df
 #' @param species
@@ -488,6 +382,104 @@ barplot_density_mpa <- function(df, species){
 #'
 
 barplot_density_allen_coral_image <- function(df, species, img){
+  
+  #mean density per coral hab for given species
+  df %>%
+    dplyr::mutate(density = get(paste0("density_", species))) %>%
+    dplyr::mutate(coral_hab = get(paste("class"))) %>%
+    dplyr::select(c(density, coral_hab)) %>%
+    dplyr::group_by(coral_hab) %>%
+    dplyr::summarize(mean = mean(density, na.rm=T)) -> new
+  
+  # convert back to spatial object for plotting
+  new = sf::as_Spatial(new)
+  
+  # make dataframe for plotting
+  new = data.frame(mean_dens = new$mean,
+                   coral_hab = as.factor(new$coral_hab))
+  
+  #rename deep_Sea
+  levels(new$coral_hab) <- c("Coral/Algae", "Open Sea", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass")
+  
+  # parameters for image placement
+  if (species == "Dugong_certain"){
+    ylim = 0.15
+    a = 5
+    b = 7.8
+    c = 0.10
+    d = 0.18
+    species_title <- "Dugong"
+  }
+  if (species == "Turtle"){
+    ylim = 0.09
+    a = 5.4
+    b = 8.2
+    c = 0.07
+    d = 0.095
+    species_title <- "Sea turtle"
+  }
+  if (species == "Shark"){
+    ylim = 0.05
+    a = 5
+    b = 7.8
+    c = 0.035
+    d = 0.055
+    species_title <- "Shark"
+  }
+  if (species == "Round_ray"){
+    ylim = 0.15
+    a = 5.5
+    b = 8.4
+    c = 0.11
+    d = 0.16
+    species_title <- "Dasyatidae"
+  }
+  if (species == "Eagle_ray"){
+    ylim = 0.05
+    a = 5.4
+    b = 8.3
+    c = 0.037
+    d = 0.055
+    species_title <- "Myliobatidae"
+  }
+  
+  
+  # plot
+  p = ggplot2::ggplot(new, ggplot2::aes(x = coral_hab, y = mean_dens)) +
+    ggplot2::geom_col() +
+    ggplot2::xlab("Habitat class") +
+    ggplot2::ylim(c(0, ylim)) +
+    ggplot2::ylab("Density (ind / ha)") +
+    ggplot2::ggtitle(species_title) +
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1, size =12),
+                   axis.title.y = ggplot2::element_text(size = 15),
+                   axis.title.x = ggplot2::element_text(size = 15),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
+                   # panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid', colour = "white")) +
+    #add megafaune image
+    ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
+  
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_allen_coral_", species, "_image.png")), p, width = 7, height = 5)
+  
+}
+
+
+
+
+
+#' Barplot of mean density with SE per Allen coral habitat with image
+#'
+#' @param df
+#' @param species
+#' @param img
+#'
+#' @return
+#' @export
+#'
+
+barplot_density_se_allen_coral_image <- function(df, species, img){
 
   #mean density per coral hab for given species
   df %>%
@@ -567,14 +559,15 @@ barplot_density_allen_coral_image <- function(df, species, img){
                    axis.title.y = ggplot2::element_text(size = 15),
                    axis.title.x = ggplot2::element_text(size = 15),
                    panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
-                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   # panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
                    panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid', colour = "white")) +
    #add megafaune image
    ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
 
-  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_allen_coral_", species, "_image.png")), p, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_se_allen_coral_", species, "_image.png")), p, width = 7, height = 5)
 
 }
+
 
 
 
@@ -593,6 +586,105 @@ barplot_density_allen_coral_image <- function(df, species, img){
 #'
 
 barplot_density_mpa_image <- function(df, species, img){
+  
+  #mean density and se for given species
+  df %>%
+    dplyr::mutate(density = get(paste0("density_", species))) %>%
+    dplyr::group_by(mpa_status) %>%
+    dplyr::summarize(mean = mean(density, na.rm=T)) -> new
+  
+  # convert back to spatial object for plotting
+  new = sf::as_Spatial(new)
+  
+  # make dataframe for plotting
+  new = data.frame(mean_dens = new$mean,
+                   mpa_status = as.factor(new$mpa_status))
+  
+  levels(new$mpa_status) <- c("Inside MPA", "Outside MPA")
+  
+  # parameters for image placement
+  if (species == "Dugong_certain"){
+    a = 1.8
+    b = 2.8
+    c = 0.05
+    d = 0.07
+    ylim = 0.06
+    species_title <- "Dugong"
+  }
+  if (species == "Turtle"){
+    a = 1.8
+    b = 2.8
+    c = 0.055
+    d = 0.075
+    ylim = 0.07
+    species_title <- "Sea turtle" 
+  }
+  if (species == "Shark"){
+    a = 1.8
+    b = 2.6
+    c = 0.027
+    d = 0.042
+    ylim = 0.035
+    species_title <- "Shark"
+  }
+  if (species == "Round_ray"){
+    a = 1.8
+    b = 2.6
+    c = 0.03
+    d = 0.045
+    ylim = 0.04
+    species_title <- "Dasyatidae" 
+  }
+  if (species == "Eagle_ray"){
+    a = 1.8
+    b = 2.8
+    c = 0.028
+    d = 0.038
+    ylim = 0.035
+    species_title <- "Myliobatidae" 
+  }
+  
+  # plot
+  p = ggplot2::ggplot(new, ggplot2::aes(x = mpa_status, y = mean_dens)) +
+    ggplot2::geom_col() +
+    ggplot2::xlab("Protection") +
+    ggplot2::ylab("Density (ind / ha)") +
+    ggplot2::ylim(0, ylim) +
+    ggplot2::ggtitle(species_title) +
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, size = 17),
+                   axis.text = ggplot2::element_text(size = 14),
+                   axis.title.y = ggplot2::element_text(size = 17),
+                   axis.title.x = ggplot2::element_text(size = 17),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
+                   # panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white")) +
+    #add megafaune image
+    ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
+  
+  
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_mpa_", species, "_image.png")), p, width = 7, height = 5)
+  
+}
+
+
+
+
+
+
+
+
+
+#' Barplot of mean density with SE per mpa status (in/out mpa) with image
+#'
+#' @param df
+#' @param species
+#' @param img
+#'
+#' @return
+#' @export
+#'
+
+barplot_density_se_mpa_image <- function(df, species, img){
 
   #mean density and se for given species
   df %>%
@@ -661,70 +753,13 @@ barplot_density_mpa_image <- function(df, species, img){
                    axis.text.x = ggplot2::element_text(size =12),
                    axis.title.y = ggplot2::element_text(size = 15),
                    panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
-                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   # panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
                    panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white")) +
   #add megafaune image
   ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
 
 
-  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_mpa_", species, "_image.png")), p, width = 7, height = 5)
-
-}
-
-
-
-#' Barplot of mean density per coral habitat and mpa status
-#'
-#' @param df
-#' @param species
-#'
-#' @return
-#' @export
-#'
-
-barplot_density_allen_coral_mpa <- function(df, species){
-
-  #mean density per mpa status and coral hab for given species
-  df %>%
-    dplyr::mutate(density = get(paste0("density_", species))) %>%
-    dplyr::mutate(coral_hab = get(paste("class"))) %>%
-    dplyr::group_by(coral_hab, mpa_status) %>%
-    dplyr::summarize(mean = mean(density, na.rm=T),
-                     sd = sd(density, na.rm=T),
-                     se = sd / sqrt(length(density))) -> new
-
-  # convert back to spatial object for plotting
-  new = sf::as_Spatial(new)
-
-  # make dataframe for plotting
-  new = data.frame(mean_dens = new$mean,
-                   sd_dens = new$sd,
-                   se_dens = new$se,
-                   coral_hab = as.factor(new$coral_hab),
-                   mpa_status = as.factor(new$mpa_status))
-
-  #rename deep_Sea
-  levels(new$coral_hab) <- c("Coral/Algae", "Open Sea", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass")
-  levels(new$mpa_status) <- c("Inside MPA", "Outside MPA")
-
-  # plot
-  p = ggplot2::ggplot(new, ggplot2::aes(x = coral_hab, y = mean_dens, fill = mpa_status)) +
-    ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge()) +
-    ggplot2::geom_errorbar(ggplot2::aes(x = coral_hab, ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, size=1.3,
-                           position = ggplot2::position_dodge(0.9), colour = "orange") +
-    ggplot2::scale_fill_manual(values = c("Outside MPA" = "grey20", "Inside MPA" = "yellow")) +
-    ggplot2::xlab("") +
-    ggplot2::ylab("Density") +
-    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
-                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1, size =12),
-                   axis.title.y = ggplot2::element_text(size = 15),
-                   legend.title = ggplot2::element_blank(),
-                   legend.text = ggplot2::element_text(size = 12),
-                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
-                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
-                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white"))
-
-  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_allen_coral_mpa_", species, ".png")), p, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_se_mpa_", species, "_image.png")), p, width = 7, height = 5)
 
 }
 
@@ -733,7 +768,8 @@ barplot_density_allen_coral_mpa <- function(df, species){
 
 
 
-#' Barplot of mean density per coral habitat and mpa status with image
+
+#' Barplot of mean density per Allen coral habitat and mpa status with image
 #'
 #' @param df
 #' @param species
@@ -744,6 +780,109 @@ barplot_density_allen_coral_mpa <- function(df, species){
 #'
 
 barplot_density_allen_coral_mpa_image <- function(df, species, img){
+  
+  #mean density per mpa status and coral hab for given species
+  df %>%
+    dplyr::mutate(density = get(paste0("density_", species))) %>%
+    dplyr::mutate(coral_hab = get(paste("class"))) %>%
+    dplyr::group_by(coral_hab, mpa_status) %>%
+    dplyr::summarize(mean = mean(density, na.rm=T)) -> new
+  
+  # convert back to spatial object for plotting
+  new = sf::as_Spatial(new)
+  
+  # make dataframe for plotting
+  new = data.frame(mean_dens = new$mean,
+                   coral_hab = as.factor(new$coral_hab),
+                   mpa_status = as.factor(new$mpa_status))
+  
+  #rename deep_Sea
+  levels(new$coral_hab) <- c("Coral/Algae", "Open Sea", "Microalgal Mats", "Rock", "Rubble", "Sand", "Seagrass")
+  levels(new$mpa_status) <- c("Inside MPA", "Outside MPA")
+  
+  # parameters for image placement
+  if (species == "Dugong_certain"){
+    a = 5.3
+    b = 7.8
+    c = 0.33
+    d = 0.53
+    ylim = 0.45
+    species_title <- "Dugong" 
+  }
+  if (species == "Turtle"){
+    a = 5.3
+    b = 8
+    c = 0.11
+    d = 0.15
+    ylim = 0.14
+    species_title <- "Sea turtle" 
+  }
+  if (species == "Shark"){
+    a = 5
+    b = 7.8
+    c = 0.045
+    d = 0.065
+    ylim = 0.06
+    species_title <- "Shark" 
+  }
+  if (species == "Round_ray"){
+    a = 5
+    b = 8.8
+    c = 0.13
+    d = 0.175
+    ylim = 0.165
+    species_title <- "Dasyatidae" 
+  }
+  if (species == "Eagle_ray"){
+    a = 5.4
+    b = 8.2
+    c = 0.062
+    d = 0.085
+    ylim = 0.08
+    species_title <- "Myliobatidae" 
+  }
+  
+  # plot
+  p = ggplot2::ggplot(new, ggplot2::aes(x = coral_hab, y = mean_dens, fill = mpa_status)) +
+    ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge()) +
+    ggplot2::scale_fill_manual(values = c("Outside MPA" = "grey20", "Inside MPA" = "grey80"), name = "Protection") +
+    ggplot2::xlab("Habitat class") +
+    ggplot2::ylab("Density (ind / ha)") +
+    ggplot2::ylim(0, ylim) +
+    ggplot2::ggtitle(species_title) +
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                   axis.text.x = ggplot2::element_text(angle = 90, vjust=0.5, hjust=1, size =12),
+                   axis.title.x = ggplot2::element_text(size = 15),
+                   axis.title.y = ggplot2::element_text(size = 15),
+                   legend.title = ggplot2::element_text(size = 15),
+                   legend.text = ggplot2::element_text(size = 12),
+                   panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
+                   # panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white")) +
+    #add megafaune image
+    ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
+  
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_allen_coral_mpa_", species, "_image.png")), p, width = 7, height = 5)
+  
+}
+
+
+
+
+
+
+
+#' Barplot of mean density with SE per Allen coral habitat and mpa status with image
+#'
+#' @param df
+#' @param species
+#' @param img
+#'
+#' @return
+#' @export
+#'
+
+barplot_density_se_allen_coral_mpa_image <- function(df, species, img){
 
   #mean density per mpa status and coral hab for given species
   df %>%
@@ -810,7 +949,7 @@ barplot_density_allen_coral_mpa_image <- function(df, species, img){
     ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge()) +
     ggplot2::geom_errorbar(ggplot2::aes(x = coral_hab, ymin = mean_dens-se_dens, ymax = mean_dens+se_dens), width=0.4, size=1.3,
                            position = ggplot2::position_dodge(0.9), colour = "orange") +
-    ggplot2::scale_fill_manual(values = c("Outside MPA" = "grey20", "Inside MPA" = "yellow")) +
+    ggplot2::scale_fill_manual(values = c("Outside MPA" = "grey20", "Inside MPA" = "grey80")) +
     ggplot2::xlab("Habitat class") +
     ggplot2::ylab("Density") +
     ggplot2::ggtitle(species_title) +
@@ -821,12 +960,12 @@ barplot_density_allen_coral_mpa_image <- function(df, species, img){
                    legend.title = ggplot2::element_blank(),
                    legend.text = ggplot2::element_text(size = 12),
                    panel.background = ggplot2::element_rect(fill = "white", colour = "black",size = 0.5, linetype = "solid"),
-                   panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
+                   # panel.grid.major.y = ggplot2::element_line(size = 0.5, linetype = 'dashed', colour = "grey"),
                    panel.grid.minor = ggplot2::element_line(size = 0.25, linetype = 'solid',colour = "white")) +
   #add megafaune image
   ggplot2::annotation_custom(grid::rasterGrob(img, interpolate=TRUE), xmin = a, xmax = b, ymin = c, ymax = d)
 
-  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_allen_coral_mpa_", species, "_image.png")), p, width = 7, height = 5)
+  ggplot2::ggsave(here::here(paste0("outputs/barplot_density_se_allen_coral_mpa_", species, "_image.png")), p, width = 7, height = 5)
 
 }
 
@@ -1121,8 +1260,8 @@ boxplot_density_allen_coral_mpa_with_megafauna_image_log <- function(df, species
   if (species == "Turtle") {
     a = 5.8
     b = 8.3
-    c = 1.2
-    d = 6.1
+    c = 2.2
+    d = 7.1
     species_title = "Sea Turtle"
     X1 = 0.8
     X2 = 1.8
@@ -1158,8 +1297,8 @@ boxplot_density_allen_coral_mpa_with_megafauna_image_log <- function(df, species
   if (species == "Shark") {
     a = 6
     b = 8.3
-    c = 1.2
-    d = 3.9
+    c = 3.2
+    d = 5.9
     species_title = "Shark"
     X1 = 1
     X2 = 1.8
@@ -1195,8 +1334,8 @@ boxplot_density_allen_coral_mpa_with_megafauna_image_log <- function(df, species
   if (species == "Round_ray") {
     a = 6
     b = 7.9
-    c = 2.
-    d = 3.3
+    c = 3.0
+    d = 4.3
     species_title = "Dasyatidae ray"
     X1 = 1
     X2 = 1.8
@@ -1232,8 +1371,8 @@ boxplot_density_allen_coral_mpa_with_megafauna_image_log <- function(df, species
   if (species == "Eagle_ray") {
     a = 5.475
     b = 7.335
-    c = 2.7
-    d = 4.9
+    c = 3.7
+    d = 5.9
     species_title = "Myliobatidae ray"
     X1 = NULL
     X2 = 0.8
@@ -1729,23 +1868,6 @@ make_pairwise_comparison_allen_coral <- function(df, species){
     dplyr::filter(!is.na(density_Dugong_certain), !is.na(density_Turtle), !is.na(density_Shark), !is.na(density_Round_ray), !is.na(density_Eagle_ray)) %>%
     as.data.frame() -> df
 
-  #density taxa
-  if (species == "Dugong_certain") {
-    density_taxa = df$density_Dugong_certain
-  }
-  if (species == "Turtle") {
-    density_taxa = df$density_Turtle
-  }
-  if (species == "Shark") {
-    density_taxa = df$density_Shark
-  }
-  if (species == "Round_ray") {
-    density_taxa = df$density_Round_ray
-  }
-  if (species == "Eagle_ray") {
-    density_taxa = df$density_Eagle_ray
-  }
-
   df %>%
     dplyr::select(id, allen_coral_hab) -> df_env
 
@@ -1753,8 +1875,22 @@ make_pairwise_comparison_allen_coral <- function(df, species){
   library(pairwiseAdonis)
 
   #pairwise comp (need to replicate density_taxa column for the function to work)
-  comp <- pairwise.adonis2(cbind(density_taxa,density_taxa) ~ allen_coral_hab, data = df_env, permutations = 999, method = "euclidean")
-
+  if (species == "Dugong_certain") {
+    comp <- pairwise.adonis2(cbind(df$density_Dugong_certain, df$density_Dugong_certain) ~ allen_coral_hab, data = df_env, permutations = 999, method = "euclidean")
+  }
+  if (species == "Turtle") {
+    comp <- pairwise.adonis2(cbind(df$density_Turtle, df$density_Turtle) ~ allen_coral_hab, data = df_env, permutations = 999, method = "euclidean")
+  }
+  if (species == "Shark") {
+    comp <- pairwise.adonis2(cbind(df$density_Shark, df$density_Shark) ~ allen_coral_hab, data = df_env, permutations = 999, method = "euclidean")
+  }
+  if (species == "Round_ray") {
+    comp <- pairwise.adonis2(cbind(df$density_Round_ray, df$density_Round_ray) ~ allen_coral_hab, data = df_env, permutations = 999, method = "euclidean")
+  }
+  if (species == "Eagle_ray") {
+    comp <- pairwise.adonis2(cbind(df$density_Eagle_ray, df$density_Eagle_ray) ~ allen_coral_hab, data = df_env, permutations = 999, method = "euclidean")
+  }
+  
   print(comp)
 
   return(comp)
@@ -1782,23 +1918,6 @@ make_pairwise_comparison_allen_coral_mpa <- function(df, species){
     dplyr::filter(!is.na(density_Dugong_certain), !is.na(density_Turtle), !is.na(density_Shark), !is.na(density_Round_ray), !is.na(density_Eagle_ray)) %>%
     as.data.frame() -> df
 
-  #density taxa
-  if (species == "Dugong_certain") {
-    density_taxa = df$density_Dugong_certain
-  }
-  if (species == "Turtle") {
-    density_taxa = df$density_Turtle
-  }
-  if (species == "Shark") {
-    density_taxa = df$density_Shark
-  }
-  if (species == "Round_ray") {
-    density_taxa = df$density_Round_ray
-  }
-  if (species == "Eagle_ray") {
-    density_taxa = df$density_Eagle_ray
-  }
-
   df %>%
     dplyr::select(id, allen_coral_hab, mpa_status) -> df_env
 
@@ -1806,7 +1925,21 @@ make_pairwise_comparison_allen_coral_mpa <- function(df, species){
   library(pairwiseAdonis)
 
   #pairwise comp (need to replicate density_taxa column for the function to work)
-  comp <- pairwise.adonis2(cbind(density_taxa,density_taxa) ~ allen_coral_hab * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  if (species == "Dugong_certain") {
+    comp <- pairwise.adonis2(cbind(df$density_Dugong_certain, df$density_Dugong_certain) ~ allen_coral_hab * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  }
+  if (species == "Turtle") {
+    comp <- pairwise.adonis2(cbind(df$density_Turtle, df$density_Turtle) ~ allen_coral_hab * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  }
+  if (species == "Shark") {
+    comp <- pairwise.adonis2(cbind(df$density_Shark, df$density_Shark) ~ allen_coral_hab * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  }
+  if (species == "Round_ray") {
+    comp <- pairwise.adonis2(cbind(df$density_Round_ray, df$density_Round_ray) ~ allen_coral_hab * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  }
+  if (species == "Eagle_ray") {
+    comp <- pairwise.adonis2(cbind(df$density_Eagle_ray, df$density_Eagle_ray) ~ allen_coral_hab * mpa_status, data = df_env, permutations = 999, method = "euclidean")
+  }
 
   print(comp)
 

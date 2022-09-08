@@ -2,7 +2,7 @@
 % Please edit documentation in R/compare_densities.R
 \name{barplot_density_allen_coral_mpa_image}
 \alias{barplot_density_allen_coral_mpa_image}
-\title{Barplot of mean density per coral habitat and mpa status with image}
+\title{Barplot of mean density per Allen coral habitat and mpa status with image}
 \usage{
 barplot_density_allen_coral_mpa_image(df, species, img)
 }
@@ -13,5 +13,5 @@ barplot_density_allen_coral_mpa_image(df, species, img)
 
 }
 \description{
-Barplot of mean density per coral habitat and mpa status with image
+Barplot of mean density per Allen coral habitat and mpa status with image
 }
